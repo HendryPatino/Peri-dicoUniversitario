@@ -3,93 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U-Social | Foro Estudiantil</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <title>U-Social | Foro Estudiantes</title>
+    <link rel="stylesheet" href="../css/styles.css"> <!-- Ajusta la ruta si está en la raíz -->
 </head>
 <body>
 
-    <!-- MENÚ DE NAVEGACIÓN UNIVERSAL -->
     <header class="header">
         <div class="header-container">
             <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='../index.html'">U-<span>Social</span></h1>
             <nav class="nav">
                 <a href="../index.html" class="nav-link">Inicio</a>
-                
-                <a href="#" onclick="verificarAccesoForo('estudiantes')" class="nav-link">Foro Estudiantes</a>
-                <a href="#" onclick="verificarAccesoForo('profesores')" class="nav-link">Foro Profesores</a>
-                
-                <a href="login.html" id="auth-btn" class="btn-auth">Iniciar Sesión</a>
+                <a href="foro_estudiantes.html" class="nav-link active">Foro Estudiantes</a>
+                <a href="#" onclick="alert('Área restringida para docentes.'); return false;" class="nav-link">Foro Profesores</a>
+                <a href="../index.html" class="btn-auth">Volver al Inicio</a>
             </nav>
         </div>
     </header>
 
-    <main class="main-container" style="grid-template-columns: 1fr; max-width: 800px;">
+    <main class="main-container" id="vista-inicio-dashboard" style="margin-top: 2rem;">
+        
+        <!-- COLUMNA DEL CONTENIDO DEL FORO -->
         <section class="section-block">
-            <div style="background-color: #feebc8; padding: 1rem; border-radius: 8px; border-left: 5px solid var(--accent); margin-bottom: 2rem;">
-                <h2 style="color: #c05621;">💬 Foro de Estudiantes 🔒</h2>
-                <p style="font-size: 0.9rem; color: #7b341e;">Espacio seguro y exclusivo para la comunidad de alumnos y representantes encargados.</p>
+            <div style="background: var(--primary); color: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                <h2 style="margin: 0; font-weight: 800;">💬 Foro Comunitario de Estudiantes</h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Espacio abierto para debates, consultas académicas y libre expresión estudiantil.</p>
             </div>
 
-            <div class="card" style="border-left: 4px solid var(--accent);">
-                <h4 style="color: var(--primary);">¿Alguien sabe cuándo abren los cupos para el parqueadero nocturno?</h4>
-                <p class="card-meta">Por: Kevin Silva (Estudiante) | Hoy</p>
-                <p class="card-excerpt">Siempre se llena a las 6 PM y los de ingeniería de sistemas nos quedamos afuera...</p>
-            </div>
-
-            <div class="card" style="border-left: 4px solid var(--accent);">
-                <h4 style="color: var(--primary);">Abro hilo: Propuestas para la semana universitaria</h4>
-                <p class="card-meta">Por: Santiago Paz (Representante) | Ayer</p>
-                <p class="card-excerpt">Dejen aquí sus ideas de torneos de eSports, bandas invitadas o talleres que les gustaría ver este semestre.</p>
-            </div>
-            <div class="card" style="border-left: 4px solid var(--accent);">
-                <h4 style="color: rgb(237, 242, 247) !important;" data-original-color="var(--primary)">Abro hilo: Propuestas para la semana universitaria</h4>
-                <p class="card-meta">Por: Santiago Paz (Representante) | Ayer</p>
-                <p class="card-excerpt">Dejen aquí sus ideas de torneos de eSports, bandas invitadas o talleres que les gustaría ver este semestre.</p>
-            </div>
-
-            <div class="card" style="margin-top: 2rem; border-top: 4px solid #3182ce; padding: 1.5rem;">
-                <h3 style="margin-bottom: 1rem; font-size: 1.3rem; font-weight: bold;">✍️ Crear Nueva Publicación</h3>
-                
-                <form id="forum-form">
+            <!-- CAJA PARA CREAR UN NUEVO POST EN EL FORO -->
+            <div class="card" style="margin-bottom: 2rem; background: var(--white); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--accent);">
+                <h3 style="margin-top: 0; margin-bottom: 1rem; font-weight: 700; color: inherit;">✏️ Crear una nueva publicación</h3>
+                <div class="news-form">
                     <div style="margin-bottom: 1rem;">
-                        <label for="forum-category" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">📁 Categoría:</label>
-                        <select id="forum-category" style="width: 100%; padding: 0.6rem; border-radius: 4px; border: 1px solid #cbd5e0; box-sizing: border-box; background: transparent; color: inherit;">
-                            <option value="📚 Material de Estudio" style="color: #000;">📚 Material de Estudio</option>
-                            <option value="❓ Duda Académica" style="color: #000;">❓ Duda Académica</option>
-                            <option value="📢 Anuncio General" style="color: #000;">📢 Anuncio General</option>
-                            <option value="☕ Espacio Libre / Café" style="color: #000;">☕ Espacio Libre / Café</option>
-                        </select>
+                        <textarea id="foro-post-content" placeholder="¿De qué quieres hablar hoy con tus compañeros? Escribe aquí tu aporte..." rows="3" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background: transparent; color: inherit; resize:vertical; font-family: inherit;"></textarea>
                     </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label for="forum-title" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">📝 Título del Debate:</label>
-                        <input type="text" id="forum-title" placeholder="Ej: Busco grupo para cálculo / Alguien tiene el libro de redes?" required style="width: 100%; padding: 0.6rem; border-radius: 4px; border: 1px solid #cbd5e0; box-sizing: border-box; background: transparent; color: inherit;">
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label for="forum-content" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">💬 Contenido de la publicación:</label>
-                        <textarea id="forum-content" rows="5" placeholder="Escribe aquí los detalles de tu publicación..." required style="width: 100%; padding: 0.6rem; border-radius: 4px; border: 1px solid #cbd5e0; box-sizing: border-box; resize: vertical; background: transparent; color: inherit;"></textarea>
-                    </div>
-
-                    <div style="margin-bottom: 1.5rem;">
-                        <label for="forum-image" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">🖼️ Adjuntar Imagen (Opcional):</label>
-                        <input type="file" id="forum-image" accept="image/*" style="width: 100%; padding: 0.4rem; border: 1px solid #cbd5e0; border-radius: 4px; background: transparent; color: inherit;">
-                    </div>
-
-                    <button type="submit" style="background-color: #3182ce; color: white; padding: 0.7rem 1.5rem; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem;">🚀 Lanzar al Foro</button>
-                </form>
+                    <button type="button" onclick="publicarEnForoEstudiantes(event)" style="width:100%; background: var(--accent); color:white; padding:0.7rem; font-size:1rem; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Lanzar al Foro</button>
+                </div>
             </div>
 
-            <div id="forum-posts" style="margin-top: 2rem;"></div>
+            <!-- CONTENEDOR DEL HILO DEL FORO -->
+            <h3 class="block-title" style="border-bottom-color: var(--accent); color: var(--accent);">
+                Discusiones Recientes
+            </h3>
+            
+            <div id="foro-posts-container"></div>
         </section>
+
+        <!-- BARRA LATERAL DEL FORO -->
+        <aside class="sidebar">
+            <h4 class="sidebar-title">🛡️ Normas de Convivencia</h4>
+            <div class="card-excerpt" style="font-size: 0.85rem; color: inherit; line-height: 1.4;">
+                <p style="margin-bottom: 0.5rem;"><strong>1. Respeto Mutuo:</strong> No se tolerarán insultos ni lenguaje ofensivo.</p>
+                <p style="margin-bottom: 0.5rem;"><strong>2. Pertinencia:</strong> Mantén los temas enfocados en la vida universitaria.</p>
+                <p style="margin-bottom: 0rem;"><strong>3. Identidad:</strong> Tus posts muestran tu etiqueta de perfil verificado.</p>
+            </div>
+        </aside>
     </main>
 
+    <!-- PANEL DE ACCESIBILIDAD MANTENIDO PARA EL MODO OSCURO -->
+    <div class="accessibility-toggle" id="acc-toggle" onclick="toggleAccessibilityPanel()">⚙️</div>
+    <div class="accessibility-panel" id="acc-panel">
+        <span class="panel-close" onclick="toggleAccessibilityPanel()">✕</span>
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 700;">Accesibilidad</h3>
+        <div class="panel-section">
+            <h4>Paleta de Colores</h4>
+            <select id="theme-select" class="panel-select" onchange="changeTheme(this.value)">
+                <option value="light">☀️ Modo Claro</option>
+                <option value="dark">🌑 Modo Oscuro Premium</option>
+                <option value="warm">🍂 Modo Lectura Cálido</option>
+            </select>
+        </div>
+    </div>
+
     <footer class="footer">
-        <p>&copy; 2026 U-Social. Zona Estudiantil Protegida.</p>
+        <p>© 2026 U-Social - Red de Comunicación Universitaria.</p>
     </footer>
 
+    <!-- LLAMADOS GLOBALES -->
     <script src="../js/main.js"></script>
-    <script src="../js/foros.js"></script>
-    <script src="../js/custom.js"></script> 
+    <script src="../js/custom.js"></script>
+
+    <!-- MOTOR DINÁMICO DEL FORO ASOCIADO A PERFILES -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let usuarioSesion = null;
+        try {
+            const stored = localStorage.getItem("usuarioSesion");
+            if (stored) usuarioSesion = JSON.parse(stored);
+        } catch(e) { console.error("Error al verificar sesión en foro:", e); }
+
+        const container = document.getElementById("foro-posts-container");
+
+        // Publicaciones de ejemplo iniciales (Para que el foro no se vea vacío)
+        const postsPredeterminados = [
+            {
+                id: 501,
+                username: "representante",
+                autorNombre: "Santiago Gómez",
+                contenido: "¡Hola a todos! Abrí este hilo para recibir sus comentarios sobre la propuesta del nuevo horario de la biblioteca. ¿Les parece bien que cierre a las 10:00 PM?",
+                fecha: "Hace 3 horas"
+            },
+            {
+                id: 502,
+                username: "estudiante_software",
+                autorNombre: "Carlos Mendoza",
+                contenido: "Excelente iniciativa, Santiago. A los que dejamos los laboratorios tarde nos vendría de maravilla ese horario extendido.",
+                fecha: "Hace 1 hora"
+            }
+        ];
+
+        // Inicializar la base de datos del foro en localStorage si no existe
+        let postsForoEstudiantes = JSON.parse(localStorage.getItem("posts_foro_estudiantes"));
+        if (!postsForoEstudiantes || !Array.isArray(postsForoEstudiantes)) {
+            postsForoEstudiantes = postsPredeterminados;
+            localStorage.setItem("posts_foro_estudiantes", JSON.stringify(postsForoEstudiantes));
+        }
+
+        // FUNCIÓN CLAVE: RENDERIZAR E INYECTAR LOS ENLACES A PERFILES
+        window.renderizarPostsForo = () => {
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (postsForoEstudiantes.length === 0) {
+                container.innerHTML = `<p style="text-align:center; padding: 2rem; color: #718096; background: var(--white); border-radius: 8px;">No hay debates abiertos en este momento. ¡Sé el primero en aportar!</p>`;
+                return;
+            }
+
+            postsForoEstudiantes.forEach(p => {
+                // Si el que navega es Administrador o es el dueño del post, puede borrarlo
+                const esAdmin = usuarioSesion && usuarioSesion.rol === "admin";
+                const esDueno = usuarioSesion && (usuarioSesion.username === p.username);
+                const botonBorrar = (esAdmin || esDueno) ? 
+                    `<button onclick="borrarPostForo(${p.id})" style="background:none; border:none; color:#e53e3e; font-weight:bold; cursor:pointer; font-size:0.8rem; padding:0; margin-top:0.8rem; display:block;">🗑️ Eliminar Aporte</button>` : "";
+
+                // Si por alguna razón el post no trae un username asignado, le ponemos uno genérico
+                let aliasUser = p.username || "comunidad_user";
+
+                container.innerHTML += `
+                    <article class="card" style="margin-bottom: 1.2rem; padding: 1.5rem; border-radius: 8px; background: var(--white); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+                            
+                            <!-- 🔥 ENLACE HIPERTEXTUAL DINÁMICO AL PERFIL PÚBLICO -->
+                            <span style="font-size: 0.9rem; color: var(--gray);">
+                                Por: <a href="perfil.html?user=${aliasUser}" style="color: var(--primary); font-weight: bold; text-decoration: none; border-bottom: 1px dashed transparent;" onmouseover="this.style.borderBottomColor='var(--primary)'" onmouseout="this.style.borderBottomColor='transparent'">
+                                    ${p.autorNombre} (@${aliasUser})
+                                </a>
+                            </span>
+                            
+                            <span style="font-size: 0.8rem; color: #718096;">${p.fecha}</span>
+                        </div>
+                        <p style="white-space: pre-wrap; margin: 0; font-size: 1rem; line-height: 1.5; color: inherit;">${p.contenido}</p>
+                        ${botonBorrar}
+                    </article>
+                `;
+            });
+        };
+
+        // ACCIÓN: PUBLICAR NUEVO DEBATE
+        window.publicarEnForoEstudiantes = (e) => {
+            if (e) e.preventDefault();
+            const txt = document.getElementById("foro-post-content");
+            if (!txt || !txt.value.trim()) {
+                alert("No puedes publicar un aporte vacío.");
+                return;
+            }
+
+            // Validar de manera amigable que el usuario tenga sesión iniciada
+            if (!usuarioSesion) {
+                alert("Debes iniciar sesión para participar en el foro.");
+                return;
+            }
+
+            // Construimos el nuevo objeto rescatando el username y el nombre real de la sesión
+            const nuevoAporte = {
+                id: Date.now(),
+                username: usuarioSesion.username || "usuario_anonimo",
+                autorNombre: usuarioSesion.nombre || "Estudiante Integrado",
+                contenido: txt.value.trim(),
+                fecha: "Ahora mismo"
+            };
+
+            postsForoEstudiantes.unshift(nuevoAporte);
+            localStorage.setItem("posts_foro_estudiantes", JSON.stringify(postsForoEstudiantes));
+            
+            txt.value = "";
+            window.renderizarPostsForo();
+        };
+
+        // ACCIÓN: ELIMINAR APORTE
+        window.borrarPostForo = (id) => {
+            if (!confirm("¿Estás seguro de que deseas retirar este aporte del foro?")) return;
+            postsForoEstudiantes = postsForoEstudiantes.filter(p => p.id !== id);
+            localStorage.setItem("posts_foro_estudiantes", JSON.stringify(postsForoEstudiantes));
+            window.renderizarPostsForo();
+        };
+
+        // Renderizado Inicial
+        window.renderizarPostsForo();
+    });
+    </script>
 </body>
 </html>

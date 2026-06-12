@@ -8,38 +8,42 @@
 </head>
 <body>
 
-    <!-- 1. BARRA DE NAVEGACIÓN UNIVERSAL -->
     <header class="header">
         <div class="header-container">
             <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='index.html'">U-<span>Social</span></h1>
             <nav class="nav">
                 <a href="index.html" class="nav-link">Inicio</a>
                 <a href="#" onclick="verificarAccesoForo('estudiantes'); return false;" class="nav-link">Foro Estudiantes</a>
-                <a href="#" onclick="verificarAccesoForo('profesores'); return false;" class="nav-link">Foro Profesores</a>
+                <a href="#" onclick="verificarAccAccessoForo('profesores'); return false;" class="nav-link">Foro Profesores</a>
                 <a href="pages/login.html" id="auth-btn" class="btn-auth">Iniciar Sesión</a>
             </nav>
         </div>
     </header>
 
-    <!-- 2. CONTENEDOR PRINCIPAL -->
-    <main class="main-container">
+    <div class="main-container" style="padding-top: 1.5rem; padding-bottom: 0;">
+        <div class="card" style="width: 100%; padding: 0.8rem 1.2rem; border-left: 5px solid var(--primary); background: var(--white); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: flex; gap: 0.8rem; align-items: center;">
+                <span style="font-size: 1.3rem;">🔍</span>
+                <input type="text" id="global-search" placeholder="Escribe tu búsqueda (título, noticia, noticiero de confianza...) y presiona Enter..." style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--gray); background: transparent; color: inherit; font-size: 1rem; outline: none;">
+                <button type="button" onclick="ejecutarBusquedaEstiloYouTube()" style="background: var(--primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer;">Buscar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA PRINCIPAL RESTAURADA -->
+    <main class="main-container" id="vista-inicio-dashboard">
         
-        <!-- COLUMNA DE NOTICIAS -->
         <section class="section-block">
-            
-            <!-- Contenedor del Formulario del Administrador -->
+            <!-- Bloque seguro para el panel de administración -->
             <div id="admin-form-container"></div>
 
             <h3 class="block-title" style="border-bottom-color: var(--color-global); color: var(--color-global); margin-top: 1rem;">
                 Coreografía Informativa: Últimas Noticias
             </h3>
             
-            <!-- Contenedor del Muro de Noticias -->
             <div id="global-news-container"></div>
-
         </section>
 
-        <!-- BARRA LATERAL -->
         <aside class="sidebar">
             <h4 class="sidebar-title">📅 Próximos Eventos</h4>
             <div class="card-excerpt" style="font-size: 0.9rem; color: #4a5568; margin-bottom: 1.5rem;">
@@ -48,16 +52,53 @@
             </div>
 
             <h4 class="sidebar-title" style="border-bottom-color: var(--color-cultura);">💡 Enlaces Destacados</h4>
-            <div class="card-excerpt" style="font-size: 0.9rem;">
+            <div class="card-excerpt" style="font-size: 0.9rem; margin-bottom: 1.5rem;">
                 <a href="#" onclick="verificarAccesoForo('estudiantes'); return false;" style="color: var(--primary); text-decoration: none; display: block; margin-bottom: 0.5rem; font-weight: 600;">👉 ¡Revisa el Foro Estudiantil aquí!</a>
             </div>
-        </aside>
 
+            <!-- TARJETAS CON REDIRECCIÓN DINÁMICA DE PERFILES -->
+            <h4 class="sidebar-title" style="border-bottom-color: var(--primary);">👥 Perfiles Universitarios</h4>
+            
+            <a href="pages/perfil.html?user=representante" style="text-decoration: none; color: inherit; display: block; margin-bottom: 1rem;">
+                <div class="card" style="padding: 1rem; cursor: pointer; border-left: 4px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                        <div style="width: 40px; height: 40px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">SG</div>
+                        <div>
+                            <h5 style="margin: 0; font-size: 0.95rem; font-weight: bold;">Santiago Gómez</h5>
+                            <p style="margin: 0; font-size: 0.75rem; color: #718096;">Ver Perfil de Representante</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="pages/perfil.html?user=rectoria" style="text-decoration: none; color: inherit; display: block;">
+                <div class="card" style="padding: 1rem; cursor: pointer; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                        <div style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">MB</div>
+                        <div>
+                            <h5 style="margin: 0; font-size: 0.95rem; font-weight: bold;">Dra. Martha Benavídez</h5>
+                            <p style="margin: 0; font-size: 0.75rem; color: #718096;">Ver Canal de Rectoría</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </aside>
     </main>
 
-    <!-- 3. CONFIGURACIÓN DE ACCESIBILIDAD -->
+    <!-- ARQUITECTURA DE RESULTADOS AISLADA TIPO YOUTUBE -->
+    <main class="main-container" id="vista-resultados-youtube" style="display: none; grid-template-columns: 1fr;">
+        <section class="section-block" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid var(--gray); padding-bottom: 0.8rem;">
+                <h2 id="titulo-busqueda" style="font-weight: 800; font-size: 1.6rem; color: inherit;">🔍 Resultados de la búsqueda</h2>
+                <button onclick="volverAlInicioNormal()" style="background: #4a5568; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer;">← Volver al Inicio</button>
+            </div>
+            
+            <div id="youtube-results-container"></div>
+        </section>
+    </main>
+
+    <!-- PANEL DE ACCESIBILIDAD -->
     <div class="accessibility-toggle" id="acc-toggle" onclick="toggleAccessibilityPanel()">⚙️</div>
-    
     <div class="accessibility-panel" id="acc-panel">
         <span class="panel-close" onclick="toggleAccessibilityPanel()">✕</span>
         <h3 style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 700;">Accesibilidad</h3>
@@ -91,58 +132,70 @@
         </div>
     </div>
 
-    <!-- 4. FOOTER -->
     <footer class="footer">
         <p>© 2026 U-Social - Red de Comunicación Universitaria.</p>
     </footer>
 
-    <!-- 5. INYECCIÓN CRÍTICA DE SCRIPTS -->
     <script src="js/main.js"></script>
     <script src="js/custom.js"></script>
 
-    <!-- MOTOR INCRUSTADO BLINDADO -->
+    <!-- MOTOR DE PUBLICACIONES CON ENLACES INTERACTIVOS A LOS PERFILES -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         let usuarioActivo = null;
         try {
-            const storedUser = localStorage.getItem("usuario_logeado");
+            const storedUser = localStorage.getItem("usuarioSesion");
             if (storedUser) usuarioActivo = JSON.parse(storedUser);
-        } catch (e) {}
+        } catch (e) { console.error("Error al leer la sesión en portada:", e); }
 
         const adminFormContainer = document.getElementById("admin-form-container");
         const globalNewsContainer = document.getElementById("global-news-container");
+        
+        const vistaInicio = document.getElementById("vista-inicio-dashboard");
+        const vistaResultados = document.getElementById("vista-resultados-youtube");
+        const youtubeResultsContainer = document.getElementById("youtube-results-container");
+        const searchInput = document.getElementById("global-search");
+        const tituloBusqueda = document.getElementById("titulo-busqueda");
 
+        // Noticias base vinculadas a perfiles del ecosistema
         const noticiasPorDefecto = [
             {
                 id: 1,
+                autorUsername: "rectoria",
                 titulo: "U-Social estrena su nueva plataforma de comunicación interna",
-                meta: "Por: Oficina de Prensa | Hace 1 hora",
+                meta: "Por: Dra. Martha Benavídez (Rectoría) | Hace 1 hora",
                 extracto: "Hoy se dio luz verde al ecosistema digital que unifica los foros estudiantiles, docentes y herramientas de accesibilidad premium.",
                 categoria: "global",
                 multimedia: ""
             },
             {
                 id: 2,
+                autorUsername: "representante",
                 titulo: "Convocatoria abierta para el torneo interfacultades de Deportes 2026",
-                meta: "Por: Área de Deportes | Ayer",
+                meta: "Por: Santiago Gómez (Representante) | Ayer",
                 extracto: "Inscripciones abiertas desde este lunes para fútbol, baloncesto y eSports. Revisa los requisitos con tu representante.",
                 categoria: "deporte",
                 multimedia: ""
             }
         ];
 
-        window.noticiasGlobales = JSON.parse(localStorage.getItem("noticias_globales")) || noticiasPorDefecto;
-        if (!localStorage.getItem("noticias_globales")) {
-            localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
+        try {
+            window.noticiasGlobales = JSON.parse(localStorage.getItem("noticias_globales"));
+            if (!window.noticiasGlobales || !Array.isArray(window.noticiasGlobales)) {
+                window.noticiasGlobales = noticiasPorDefecto;
+                localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
+            }
+        } catch (e) {
+            window.noticiasGlobales = noticiasPorDefecto;
         }
 
-        // ACTIVACIÓN DE FUERZA BRUTA: Cambiado a true para que aparezca obligatoriamente
-        if (true) {
+        // CONTROL DE ACCESO AL FORMULARIO
+        if (usuarioActivo && usuarioActivo.rol === "admin") {
             if (adminFormContainer) {
                 adminFormContainer.innerHTML = `
                     <div class="card" style="margin-bottom: 2rem; border-top: 5px solid var(--color-global); background: var(--white); padding: 1.5rem; border-radius: 8px;">
                         <span class="tag tag-global" style="background-color: var(--color-global); color: white; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold;">Modo Editor Autorizado</span>
-                        <h3 style="margin-top: 0.5rem; margin-bottom: 1rem; font-weight:800; color: inherit;">✍ ... Publicar Noticia en Primera Plana</h3>
+                        <h3 style="margin-top: 0.5rem; margin-bottom: 1rem; font-weight:800; color: inherit;">✍️ Publicar Noticia en Primera Plana</h3>
                         <div class="news-form">
                             <div style="margin-bottom: 1rem;">
                                 <input type="text" id="news-title" placeholder="Título de la noticia" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background: transparent; color: inherit;">
@@ -167,10 +220,14 @@
                     </div>
                 `;
             }
+        } else {
+            if (adminFormContainer) adminFormContainer.innerHTML = "";
         }
 
         window.publicarNoticiaDirecta = async (e) => {
             if (e) e.preventDefault();
+            if (!usuarioActivo || usuarioActivo.rol !== "admin") return;
+
             const tit = document.getElementById("news-title");
             const cat = document.getElementById("news-category");
             const cont = document.getElementById("news-content");
@@ -190,16 +247,12 @@
                 });
             }
 
-            let miRol = usuarioActivo && usuarioActivo.role ? usuarioActivo.role.toString().toLowerCase().trim() : "";
-            let fRol = "Administrador";
-            if (miRol === "dean" || miRol === "decano") fRol = "Decano";
-            if (miRol === "profesor" || miRol === "teacher") fRol = "Docente";
-
             const nuevo = {
                 id: Date.now(),
-                titulo: tit.value,
-                meta: `Por: ${(usuarioActivo && usuarioActivo.name) || 'Dr. Alejandro Magna'} (${fRol}) | Ahora mismo`,
-                extracto: cont.value,
+                autorUsername: "rectoria", // Vinculado al canal oficial de Rectoría
+                titulo: tit.value.trim(),
+                meta: `Por: Dra. Martha Benavídez (Rectoría) | Ahora mismo`,
+                extracto: cont.value.trim(),
                 categoria: cat.value,
                 multimedia: b64
             };
@@ -207,43 +260,134 @@
             window.noticiasGlobales.unshift(nuevo);
             localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
 
-            tit.value = "";
-            cont.value = "";
+            if (tit) tit.value = "";
+            if (cont) cont.value = "";
             if (img) img.value = "";
-            window.renderNoticiasDirectas();
+            
+            window.volverAlInicioNormal();
         };
 
-        window.renderNoticiasDirectas = () => {
+        // RENDERS OPTIMIZADOS CON ENLACE DINÁMICO REAL (href="pages/perfil.html?user=...")
+        window.renderNoticiasDirectas = (lista) => {
             if (!globalNewsContainer) return;
             globalNewsContainer.innerHTML = "";
-            window.noticiasGlobales.forEach(n => {
-                let cl = `tag-${n.categoria || 'global'}`;
+            
+            lista.forEach(n => {
                 let col = `var(--color-${n.categoria || 'global'})`;
                 let im = n.multimedia ? `<img src="${n.multimedia}" style="width:100%; max-height:350px; object-fit:cover; border-radius:6px; margin-top:1rem; display:block;">` : "";
                 
-                let btnB = `<button class="btn-delete-post" onclick="borrarNoticiaDirecta(${n.id})" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:0.85rem; font-weight:bold; margin-top:1rem; display:block; padding:0;">🗑️ Retirar Noticia</button>`;
+                const esAdmin = usuarioActivo && usuarioActivo.rol === "admin";
+                const botonBorrar = esAdmin ? `<button class="btn-delete-post" onclick="borrarNoticiaDirecta(${n.id}, false)" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:0.85rem; font-weight:bold; margin-top:1rem; display:block; padding:0;">🗑️ Retirar Noticia</button>` : "";
+                
+                let targetUser = n.autorUsername || "rectoria";
+                let textoFiltro = n.meta.replace("Por: ", "");
 
                 globalNewsContainer.innerHTML += `
                     <article class="card" style="border-top: 4px solid ${col}; margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 8px; background: var(--white);">
-                        <span class="tag ${cl}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${n.categoria}</span>
+                        <span class="tag tag-${n.categoria}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${n.categoria}</span>
                         <h4 style="margin-top:0.5rem; margin-bottom:0.3rem; font-weight:700; font-size:1.3rem; color: inherit;">${n.titulo}</h4>
-                        <p style="font-size:0.8rem; color:#718096; margin-bottom: 0.8rem;">${n.meta}</p>
+                        
+                        <!-- TEXTO METADATA INTERACTIVO -->
+                        <p style="font-size:0.8rem; color:#718096; margin-bottom: 0.8rem;">
+                            Por: <a href="pages/perfil.html?user=${targetUser}" style="color: var(--primary); text-decoration: none; font-weight: bold; border-bottom: 1px dashed transparent;" onmouseover="this.style.borderBottomColor='var(--primary)'" onmouseout="this.style.borderBottomColor='transparent'">${textoFiltro}</a>
+                        </p>
+                        
                         <p style="white-space: pre-wrap; font-size:0.95rem; line-height:1.5; color: inherit;">${n.extracto}</p>
-                        ${im} ${btnB}
+                        ${im}
+                        ${botonBorrar}
                     </article>
                 `;
             });
         };
 
-        window.borrarNoticiaDirecta = (id) => {
-            if (confirm("¿Retirar noticia?")) {
+        window.ejecutarBusquedaEstiloYouTube = () => {
+            const consulta = searchInput.value.toLowerCase().trim();
+
+            if (consulta === "") {
+                window.volverAlInicioNormal();
+                return;
+            }
+
+            const filtradas = window.noticiasGlobales.filter(noticia => {
+                return (noticia.titulo || "").toLowerCase().includes(consulta) || 
+                       (noticia.extracto || "").toLowerCase().includes(consulta) || 
+                       (noticia.categoria || "").toLowerCase().includes(consulta) ||
+                       (noticia.meta || "").toLowerCase().includes(consulta);
+            });
+
+            vistaInicio.style.display = "none";
+            vistaResultados.style.display = "grid";
+            
+            tituloBusqueda.innerHTML = `🔍 Resultados para: <span style="color: var(--primary); font-style: italic;">"${searchInput.value}"</span> (${filtradas.length})`;
+            
+            youtubeResultsContainer.innerHTML = "";
+            if (filtradas.length === 0) {
+                youtubeResultsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 4rem 1rem; color: #718096; background: var(--white); border-radius: 8px;">
+                        <p style="font-size: 4rem; margin-bottom: 1rem;">📭</p>
+                        <h3 style="font-weight: bold; color: inherit;">No hay resultados que coincidan</h3>
+                        <button onclick="volverAlInicioNormal()" style="margin-top: 1.5rem; background: var(--primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer;">Ver todas las noticias</button>
+                    </div>`;
+                return;
+            }
+
+            filtradas.forEach(n => {
+                let col = `var(--color-${n.categoria || 'global'})`;
+                let im = n.multimedia ? `<img src="${n.multimedia}" style="width:100%; max-height:400px; object-fit:cover; border-radius:6px; margin-top:1rem; display:block;">` : "";
+                
+                const esAdmin = usuarioActivo && usuarioActivo.rol === "admin";
+                const botonBorrar = esAdmin ? `<button class="btn-delete-post" onclick="borrarNoticiaDirecta(${n.id}, true)" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:0.85rem; font-weight:bold; margin-top:1rem; display:block; padding:0;">🗑️ Retirar Noticia</button>` : "";
+
+                let targetUser = n.autorUsername || "rectoria";
+                let textoFiltro = n.meta.replace("Por: ", "");
+
+                youtubeResultsContainer.innerHTML += `
+                    <article class="card" style="border-top: 4px solid ${col}; margin-bottom: 1.5rem; padding: 2rem; border-radius: 8px; background: var(--white);">
+                        <span class="tag tag-${n.categoria}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${n.categoria}</span>
+                        <h4 style="margin-top:0.5rem; margin-bottom:0.3rem; font-weight:700; font-size:1.4rem; color: inherit;">${n.titulo}</h4>
+                        
+                        <p style="font-size:0.85rem; color:#718096; margin-bottom: 1rem;">
+                            Por: <a href="pages/perfil.html?user=${targetUser}" style="color: var(--primary); text-decoration: none; font-weight: bold;">${textoFiltro}</a>
+                        </p>
+                        
+                        <p style="white-space: pre-wrap; font-size: 1rem; line-height:1.6; color: inherit;">${n.extracto}</p>
+                        ${im}
+                        ${botonBorrar}
+                    </article>
+                `;
+            });
+        };
+
+        window.volverAlInicioNormal = () => {
+            if (searchInput) searchInput.value = "";
+            vistaResultados.style.display = "none";
+            vistaInicio.style.display = "grid";
+            window.renderNoticiasDirectas(window.noticiasGlobales);
+        };
+
+        if (searchInput) {
+            searchInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    window.ejecutarBusquedaEstiloYouTube();
+                }
+            });
+        }
+
+        window.borrarNoticiaDirecta = (id, desdeResultados) => {
+            if (!usuarioActivo || usuarioActivo.rol !== "admin") return;
+            if (confirm("¿Estás seguro de que deseas retirar esta noticia?")) {
                 window.noticiasGlobales = window.noticiasGlobales.filter(n => n.id !== id);
                 localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
-                window.renderNoticiasDirectas();
+                if (desdeResultados) {
+                    window.ejecutarBusquedaEstiloYouTube();
+                } else {
+                    window.renderNoticiasDirectas(window.noticiasGlobales);
+                }
             }
         };
 
-        window.renderNoticiasDirectas();
+        window.renderNoticiasDirectas(window.noticiasGlobales);
     });
     </script>
 </body>

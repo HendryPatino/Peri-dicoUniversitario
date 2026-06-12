@@ -1,5 +1,5 @@
 // ==========================================================================
-// MOTOR DE FOROS ULTRA-ESTABLE (foros.js) - IDENTIFICADORES INMUTABLES
+// MOTOR DE FOROS ULTRA-ESTABLE (foros.js) - SOPORTE MULTIMEDIA (IMAGEN/AUDIO)
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const llaveForo = esForoEstudiantes ? 'posts_foro_estudiantes' : 'posts_foro_profesores';
 
     const forumForm = document.getElementById('forum-form');
-    const forumContainer = document.getElementById('forum-posts');
+    const forumContainer = document.getElementById('forum-posts-container') || document.getElementById('forum-posts');
 
     // --- CARGAR Y RENDERIZAR PUBLICACIONES ---
     function cargarDebates() {
@@ -27,19 +27,29 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Ordenamos una copia de los debates de la más nueva a la más antigua usando su ID numérico
         const debatesOrdenados = [...debates].sort((a, b) => b.id - a.id);
 
         debatesOrdenados.forEach((debate) => {
             const debateCard = document.createElement('article');
             debateCard.className = "card";
-            debateCard.style.cssText = "margin-top: 2rem; padding: 1.5rem; border-left: 4px solid #3182ce; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);";
+            
+            const colorBorde = esForoEstudiantes ? '#3182ce' : 'var(--color-facultad)';
+            debateCard.style.cssText = `margin-top: 2rem; padding: 1.5rem; border-left: 4px solid ${colorBorde}; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);`;
 
             const puedeBorrar = usuarioLogueado.rol === 'admin' || usuarioLogueado.nombre === debate.autor;
-            // Usamos debate.id en lugar del index del array
             const botonBorrar = puedeBorrar ? `<button class="btn-delete" data-id="${debate.id}" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-weight:bold; font-size:0.85rem; transition: 0.2s;">🗑️ Eliminar</button>` : '';
 
-            const bloqueImagen = debate.imagen ? `<div style="margin: 1.2rem 0; text-align:center;"><img src="${debate.imagen}" style="max-width:100%; max-height:400px; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"></div>` : '';
+            // DETECTOR INTELIGENTE DE RENDERIZADO DE MULTIMEDIA (Imagen o Audio)
+            let bloqueMultimedia = '';
+            if (debate.imagen) {
+                if (debate.imagen.startsWith('data:audio/') || debate.imagen.includes('audio')) {
+                    // Si el archivo guardado es un audio, renderizamos el reproductor HTML5
+                    bloqueMultimedia = `<div style="margin: 1.2rem 0; text-align:center;"><audio src="${debate.imagen}" controls style="width: 100%; max-width: 500px;"></audio></div>`;
+                } else {
+                    // Si es una imagen normal, se muestra la tarjeta gráfica estándar
+                    bloqueMultimedia = `<div style="margin: 1.2rem 0; text-align:center;"><img src="${debate.imagen}" style="max-width:100%; max-height:400px; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"></div>`;
+                }
+            }
 
             let listaComentariosHtml = "";
             const comentarios = debate.comentarios || [];
@@ -57,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             debateCard.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
-                        ${debate.categoria ? `<span style="display:inline-block; font-size:0.7rem; background:#3182ce; color:white; padding:0.25rem 0.6rem; border-radius:12px; font-weight:bold; margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px;">${debate.categoria}</span>` : ''}
+                        ${debate.categoria ? `<span style="display:inline-block; font-size:0.7rem; background:${colorBorde}; color:white; padding:0.25rem 0.6rem; border-radius:12px; font-weight:bold; margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px;">${debate.categoria}</span>` : ''}
                         <h4 style="margin: 0.2rem 0; font-size: 1.3rem; font-weight:700; line-height:1.3;">${debate.titulo}</h4>
                         <span style="font-size: 0.75rem; color: #718096;">✍️ Por: <strong>${debate.autor}</strong> (${debate.rango}) — 📅 ${debate.fecha}</span>
                     </div>
@@ -65,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <hr style="border:0; border-top:1px solid rgba(128,128,128,0.15); margin: 1rem 0;">
                 <p style="white-space: pre-line; line-height: 1.6; font-size:1rem; margin-bottom: 1rem;">${debate.contenido}</p>
-                ${bloqueImagen}
+                ${bloqueMultimedia}
                 
                 <div style="margin-top: 1.5rem; background: rgba(128,128,128,0.02); padding: 1.2rem; border-radius: 8px; border-top: 1px dashed rgba(128,128,128,0.25);">
                     <h5 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: bold; color:#718096;">Respuestas (${comentarios.length})</h5>
@@ -73,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div style="display: flex; gap: 0.6rem; margin-top: 1rem; align-items: center;">
                         <input type="text" placeholder="Escribe una respuesta clara y respetuosa..." class="reply-input" data-id="${debate.id}" style="flex:1; padding:0.6rem; border-radius:6px; border:1px solid #cbd5e0; font-size:0.9rem; background: transparent;">
-                        <button class="btn-reply" data-id="${debate.id}" style="background:#3182ce; color:white; border:none; padding:0.6rem 1.2rem; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.9rem; transition:0.2s;">Responder</button>
+                        <button class="btn-reply" data-id="${debate.id}" style="background:${colorBorde}; color:white; border:none; padding:0.6rem 1.2rem; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.9rem; transition:0.2s;">Responder</button>
                     </div>
                 </div>
             `;
@@ -81,6 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         asignarEventosInteractivos();
+
+        if (typeof window.procesarFiltradoForoMecanismo === 'function') {
+            window.procesarFiltradoForoMecanismo();
+        }
     }
 
     function asignarEventosInteractivos() {
@@ -89,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(confirm("¿Estás seguro de que deseas eliminar esta publicación?")) {
                     const idBuscar = parseInt(e.target.getAttribute('data-id'));
                     const debates = JSON.parse(localStorage.getItem(llaveForo)) || [];
-                    // Filtramos quitando el elemento que coincida con el ID exacto
                     const debatesFiltrados = debates.filter(d => d.id !== idBuscar);
                     localStorage.setItem(llaveForo, JSON.stringify(debatesFiltrados));
                     cargarDebates();
@@ -120,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!texto) return;
 
         const debates = JSON.parse(localStorage.getItem(llaveForo)) || [];
-        // Buscamos el debate exacto que tenga el ID inmutable correspondiente
         const debateDestino = debates.find(d => d.id === idBuscar);
 
         if (debateDestino) {
@@ -141,11 +153,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- COMPRESOR DE IMÁGENES AL VUELO ---
-    function procesarYPublicarConImagen(archivo, titulo, contenido, categoria) {
+    // --- PROCESADOR MULTIMEDIA INTELIGENTE ---
+    function procesarYPublicarArchivo(archivo, titulo, contenido, categoria) {
         const lector = new FileReader();
         lector.readAsDataURL(archivo);
+        
         lector.onload = (evento) => {
+            // Si es un archivo de audio, saltamos el compresor de imágenes canvas
+            if (archivo.type.startsWith('audio/')) {
+                finalizarPublicacion(titulo, contenido, categoria, evento.target.result);
+                return;
+            }
+
+            // Si es una imagen, mantenemos tu lógica original de compresión por canvas
             const img = new Image();
             img.src = evento.target.result;
             img.onload = () => {
@@ -170,19 +190,19 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    function finalizarPublicacion(titulo, contenido, categoria, imagen = null) {
+    function finalizarPublicacion(titulo, contenido, categoria, archivoAdjunto = null) {
         const fechaActual = new Date().toLocaleDateString('es-ES', { 
             day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
         });
 
         const nuevaPublicacion = {
-            id: Date.now(), // 🔥 CREACIÓN DEL ID ÚNICO E INMUTABLE
+            id: Date.now(),
             autor: usuarioLogueado.nombre,
             rango: usuarioLogueado.tipo || 'Estudiante',
             titulo: titulo,
             contenido: contenido,
             categoria: categoria,
-            imagen: imagen,
+            imagen: archivoAdjunto, // Aquí guardamos tanto el string base64 de la imagen como del audio
             comentarios: [],
             fecha: fechaActual
         };
@@ -191,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         debates.push(nuevaPublicacion);
         localStorage.setItem(llaveForo, JSON.stringify(debates));
         
-        forumForm.reset();
+        if (forumForm) forumForm.reset();
         cargarDebates();
     }
 
@@ -203,13 +223,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const titulo = document.getElementById('forum-title').value.trim();
             const contenido = document.getElementById('forum-content').value.trim();
             const selectCat = document.getElementById('forum-category');
-            const archivoImagen = document.getElementById('forum-image').files[0];
+            
+            // Soporta que el input de archivo se llame 'forum-image' o cualquier input file dentro del form
+            const inputArchivo = document.getElementById('forum-image') || forumForm.querySelector('input[type="file"]');
+            const archivoAdjunto = inputArchivo ? inputArchivo.files[0] : null;
+            
             const categoria = selectCat ? selectCat.value : null;
 
             if (!titulo || !contenido) return;
 
-            if (archivoImagen) {
-                procesarYPublicarConImagen(archivoImagen, titulo, contenido, categoria);
+            if (archivoAdjunto) {
+                procesarYPublicarArchivo(archivoAdjunto, titulo, contenido, categoria);
             } else {
                 finalizarPublicacion(titulo, contenido, categoria);
             }
