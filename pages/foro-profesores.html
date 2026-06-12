@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Social | Foro de Profesores</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+    <!-- 1. BARRA DE NAVEGACIÓN UNIVERSAL -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='../index.html'">U-<span>Social</span></h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Inicio</a>
+                <a href="#" onclick="verificarAccesoForo('estudiantes'); return false;" class="nav-link">Foro Estudiantes</a>
+                <a href="#" onclick="verificarAccesoForo('profesores'); return false;" class="nav-link">Foro Profesores</a>
+                <a href="login.html" id="auth-btn" class="btn-auth">Iniciar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 2. DISTRIBUCIÓN EN GRID (Idéntica al Periódico y Perfil) -->
+    <main class="main-container">
+        
+        <!-- COLUMNA PRINCIPAL: FORMULARIO Y DEBATES -->
+        <section class="feed-section">
+            
+            <!-- Bloque del Formulario de Publicación -->
+            <div class="card" style="border-top: 5px solid var(--color-facultad);">
+                <span class="tag tag-facultad">Espacio Docente</span>
+                <h2 style="margin-bottom: 1rem; font-weight: 800;">📢 Panel de Comunicados Académicos</h2>
+                
+                <form id="forum-form" class="news-form">
+                    <div style="margin-bottom: 1rem;">
+                        <input type="text" id="forum-title" placeholder="Título de la circular, investigación o debate" required style="width: 100%; padding: 0.75rem; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <select id="forum-category" class="panel-select" required style="padding: 0.75rem;">
+                            <option value="" disabled selected>Selecciona la categoría del comunicado...</option>
+                            <option value="Circular Oficial">📋 Circular Oficial</option>
+                            <option value="Investigación">🔬 Avance de Investigación</option>
+                            <option value="Coordinación Académica">👥 Coordinación de Notas / Clases</option>
+                            <option value="Debate Docente">💬 Debate Interno</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <textarea id="forum-content" placeholder="Escriba los detalles del anuncio institucional aquí..." rows="4" required style="width: 100%; padding: 0.75rem; border-radius: 4px; resize: vertical;"></textarea>
+                    </div>
+                    
+                    <!-- Zona Multimedia Estilizada -->
+                    <div style="background: var(--light); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border: 1px dashed var(--gray);">
+                        <p style="font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--color-facultad);">📸 Adjuntar Evidencia o Documento Visual:</p>
+                        <input type="file" id="forum-image" accept="image/*" style="width: 100%; font-size: 0.85rem;">
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="width: 100%; background-color: var(--color-facultad); font-size: 1rem; padding: 0.8rem;">Publicar Comunicado</button>
+                </form>
+            </div>
+
+            <!-- Contenedor Dinámico de Publicaciones -->
+            <div class="section-block">
+                <h3 class="block-title" style="border-bottom-color: var(--color-facultad); color: var(--color-facultad);">🗂️ Hilos de Discusión Vigentes</h3>
+                <div id="forum-posts-container">
+                    <!-- JS inyectará los hilos de profesores de forma limpia aquí -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- COLUMNA LATERAL (SIDEBAR): INFORMACIÓN EXTRA -->
+        <aside class="sidebar">
+            <h4 class="sidebar-title" style="border-bottom-color: var(--color-facultad);">Normas del Foro</h4>
+            <div style="font-size: 0.9rem; color: #4a5568;" class="card-excerpt">
+                <p style="margin-bottom: 0.8rem;">• Este espacio está restringido exclusivamente para personal docente y administrativo.</p>
+                <p style="margin-bottom: 0.8rem;">• Las publicaciones aquí realizadas son de carácter oficial o de debate científico interno.</p>
+                <p style="margin-bottom: 0.8rem;">• Por favor, mantenga la formalidad institucional en las respuestas de los hilos.</p>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- 3. PANEL DE ACCESIBILIDAD FLOTANTE (Corregido y en su lugar correcto) -->
+    <div class="accessibility-toggle" id="acc-toggle" onclick="toggleAccessibilityPanel()">⚙️</div>
+    
+    <div class="accessibility-panel" id="acc-panel">
+        <span class="panel-close" onclick="toggleAccessibilityPanel()">✕</span>
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 700;">Accesibilidad</h3>
+        
+        <div class="panel-section">
+            <h4>Paleta de Colores</h4>
+            <select id="theme-select" class="panel-select" onchange="changeTheme(this.value)">
+                <option value="light">☀️ Modo Claro (Por defecto)</option>
+                <option value="dark">🌑 Modo Oscuro Premium</option>
+                <option value="warm">🍂 Modo Lectura Cálido</option>
+            </select>
+        </div>
+        
+        <div class="panel-section">
+            <h4>Tipografía</h4>
+            <select id="font-select" class="panel-select" onchange="changeFont(this.value)">
+                <option value="default">Sans-serif (Moderna)</option>
+                <option value="arial">Arial (Clásica)</option>
+                <option value="times">Times New Roman</option>
+                <option value="comic">Comic Sans</option>
+            </select>
+        </div>
+        
+        <div class="panel-section">
+            <h4>Tamaño del Texto</h4>
+            <select id="size-select" class="panel-select" onchange="changeSize(this.value)">
+                <option value="normal">Normal</option>
+                <option value="small">Pequeño</option>
+                <option value="large">Grande</option>
+            </select>
+        </div>
+        
+        <div class="panel-section">
+            <button id="dyslexic-btn" class="switch-btn" onclick="toggleDyslexicMode()">Modo Dislexia</button>
+        </div>
+    </div>
+
+    <!-- 4. PIE DE PÁGINA -->
+    <footer class="footer">
+        <p>© 2026 U-Social - Plataforma de Comunicación Universitaria Universitaria Integrada.</p>
+    </footer>
+
+    <!-- 5. SCRIPTS TOTALMENTE SINCRONIZADOS -->
+    <script src="../js/main.js"></script>
+    <script src="../js/foros.js"></script>
+    <script src="../js/custom.js"></script>
+</body>
+</html>

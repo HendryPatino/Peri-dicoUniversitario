@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Social | Foro Estudiantil</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+    <!-- MENÚ DE NAVEGACIÓN UNIVERSAL -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='../index.html'">U-<span>Social</span></h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Inicio</a>
+                
+                <a href="#" onclick="verificarAccesoForo('estudiantes')" class="nav-link">Foro Estudiantes</a>
+                <a href="#" onclick="verificarAccesoForo('profesores')" class="nav-link">Foro Profesores</a>
+                
+                <a href="login.html" id="auth-btn" class="btn-auth">Iniciar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container" style="grid-template-columns: 1fr; max-width: 800px;">
+        <section class="section-block">
+            <div style="background-color: #feebc8; padding: 1rem; border-radius: 8px; border-left: 5px solid var(--accent); margin-bottom: 2rem;">
+                <h2 style="color: #c05621;">💬 Foro de Estudiantes 🔒</h2>
+                <p style="font-size: 0.9rem; color: #7b341e;">Espacio seguro y exclusivo para la comunidad de alumnos y representantes encargados.</p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--accent);">
+                <h4 style="color: var(--primary);">¿Alguien sabe cuándo abren los cupos para el parqueadero nocturno?</h4>
+                <p class="card-meta">Por: Kevin Silva (Estudiante) | Hoy</p>
+                <p class="card-excerpt">Siempre se llena a las 6 PM y los de ingeniería de sistemas nos quedamos afuera...</p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--accent);">
+                <h4 style="color: var(--primary);">Abro hilo: Propuestas para la semana universitaria</h4>
+                <p class="card-meta">Por: Santiago Paz (Representante) | Ayer</p>
+                <p class="card-excerpt">Dejen aquí sus ideas de torneos de eSports, bandas invitadas o talleres que les gustaría ver este semestre.</p>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--accent);">
+                <h4 style="color: rgb(237, 242, 247) !important;" data-original-color="var(--primary)">Abro hilo: Propuestas para la semana universitaria</h4>
+                <p class="card-meta">Por: Santiago Paz (Representante) | Ayer</p>
+                <p class="card-excerpt">Dejen aquí sus ideas de torneos de eSports, bandas invitadas o talleres que les gustaría ver este semestre.</p>
+            </div>
+
+            <div class="card" style="margin-top: 2rem; border-top: 4px solid #3182ce; padding: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; font-size: 1.3rem; font-weight: bold;">✍️ Crear Nueva Publicación</h3>
+                
+                <form id="forum-form">
+                    <div style="margin-bottom: 1rem;">
+                        <label for="forum-category" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">📁 Categoría:</label>
+                        <select id="forum-category" style="width: 100%; padding: 0.6rem; border-radius: 4px; border: 1px solid #cbd5e0; box-sizing: border-box; background: transparent; color: inherit;">
+                            <option value="📚 Material de Estudio" style="color: #000;">📚 Material de Estudio</option>
+                            <option value="❓ Duda Académica" style="color: #000;">❓ Duda Académica</option>
+                            <option value="📢 Anuncio General" style="color: #000;">📢 Anuncio General</option>
+                            <option value="☕ Espacio Libre / Café" style="color: #000;">☕ Espacio Libre / Café</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label for="forum-title" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">📝 Título del Debate:</label>
+                        <input type="text" id="forum-title" placeholder="Ej: Busco grupo para cálculo / Alguien tiene el libro de redes?" required style="width: 100%; padding: 0.6rem; border-radius: 4px; border: 1px solid #cbd5e0; box-sizing: border-box; background: transparent; color: inherit;">
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label for="forum-content" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">💬 Contenido de la publicación:</label>
+                        <textarea id="forum-content" rows="5" placeholder="Escribe aquí los detalles de tu publicación..." required style="width: 100%; padding: 0.6rem; border-radius: 4px; border: 1px solid #cbd5e0; box-sizing: border-box; resize: vertical; background: transparent; color: inherit;"></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="forum-image" style="font-weight: bold; display: block; margin-bottom: 0.3rem;">🖼️ Adjuntar Imagen (Opcional):</label>
+                        <input type="file" id="forum-image" accept="image/*" style="width: 100%; padding: 0.4rem; border: 1px solid #cbd5e0; border-radius: 4px; background: transparent; color: inherit;">
+                    </div>
+
+                    <button type="submit" style="background-color: #3182ce; color: white; padding: 0.7rem 1.5rem; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem;">🚀 Lanzar al Foro</button>
+                </form>
+            </div>
+
+            <div id="forum-posts" style="margin-top: 2rem;"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 U-Social. Zona Estudiantil Protegida.</p>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/foros.js"></script>
+    <script src="../js/custom.js"></script> 
+</body>
+</html>

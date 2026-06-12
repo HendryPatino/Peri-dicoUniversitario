@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Social | Mi Perfil</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .profile-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+        .avatar-large {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0 auto 1rem auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .profile-card-center {
+            text-align: center;
+        }
+        .profile-card-center h3 {
+            font-size: 1.3rem;
+            color: #1a202c;
+        }
+        .profile-bio-text {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-top: 1rem;
+            text-align: left;
+            background: var(--light);
+            padding: 0.8rem;
+            border-radius: 6px;
+        }
+        @media (max-width: 768px) {
+            .profile-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENÚ DE NAVEGACIÓN UNIVERSAL -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='../index.html'">U-<span>Social</span></h1>
+            
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Inicio</a>
+                
+                <a href="#" onclick="verificarAccesoForo('estudiantes')" class="nav-link">Foro Estudiantes</a>
+                <a href="#" onclick="verificarAccesoForo('profesores')" class="nav-link">Foro Profesores</a>
+                
+                <a href="login.html" id="auth-btn" class="btn-auth">Iniciar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        
+        <aside class="sidebar" id="profile-header-card" style="height: fit-content;">
+            <div class="profile-card-center">
+                <div id="profile-avatar" class="avatar-large">??</div>
+                <h3 id="profile-name">Cargando...</h3>
+                <span id="profile-role" class="user-badge">Rol</span>
+                <p id="profile-bio" class="profile-bio-text">Cargando biografía universitaria...</p>
+            </div>
+        </aside>
+
+        <section class="feed-section">
+            
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">📝 ¿Qué está pasando en el campus?</h3>
+                <form id="post-form" class="news-form">
+                    <input type="text" id="post-title" placeholder="Título de tu publicación o pensamiento" required style="background: transparent; color: inherit;">
+                    <textarea id="post-content" placeholder="Escribe aquí lo que quieras compartir en tu muro..." rows="3" required style="background: transparent; color: inherit; resize: vertical;"></textarea>
+                    
+                    <div style="background: var(--light); padding: 0.8rem; border-radius: 6px; margin: 0.8rem 0; border: 1px dashed var(--gray);">
+                        <p style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--primary);">📸 Adjuntar Multimedia Opcional:</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; font-size: 0.8rem;">
+                            <label style="cursor: pointer;">🖼️ Imagen: <input type="file" id="post-img" accept="image/*" style="width:100%; margin-top: 0.2rem;"></label>
+                            <label style="cursor: pointer;">🎥 Video: <input type="file" id="post-vid" accept="video/*" style="width:100%; margin-top: 0.2rem;"></label>
+                            <label style="cursor: pointer;">🎙️ Audio/Voz: <input type="file" id="post-aud" accept="audio/*" style="width:100%; margin-top: 0.2rem;"></label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="width: 100%; font-size: 1rem;">Publicar en mi Muro</button>
+                </form>
+            </div>
+
+            <h3 class="block-title" style="margin-top: 2rem; font-size: 1.3rem; font-weight: bold;">🗂️ Mis Publicaciones</h3>
+            <div id="user-posts"></div>
+
+        </section>
+
+    </main>
+
+    <!-- ENLACES DE SCRIPTS SINCRONIZADOS -->
+    <script src="../js/main.js"></script>
+    <script src="../js/perfil.js"></script>
+    <script src="../js/custom.js"></script>
+</body>
+</html>

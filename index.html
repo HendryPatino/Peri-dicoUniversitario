@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Social | Periódico Universitario</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- 1. BARRA DE NAVEGACIÓN UNIVERSAL -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='index.html'">U-<span>Social</span></h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Inicio</a>
+                <a href="#" onclick="verificarAccesoForo('estudiantes'); return false;" class="nav-link">Foro Estudiantes</a>
+                <a href="#" onclick="verificarAccesoForo('profesores'); return false;" class="nav-link">Foro Profesores</a>
+                <a href="pages/login.html" id="auth-btn" class="btn-auth">Iniciar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 2. CONTENEDOR PRINCIPAL -->
+    <main class="main-container">
+        
+        <!-- COLUMNA DE NOTICIAS -->
+        <section class="section-block">
+            
+            <!-- Contenedor del Formulario del Administrador -->
+            <div id="admin-form-container"></div>
+
+            <h3 class="block-title" style="border-bottom-color: var(--color-global); color: var(--color-global); margin-top: 1rem;">
+                Coreografía Informativa: Últimas Noticias
+            </h3>
+            
+            <!-- Contenedor del Muro de Noticias -->
+            <div id="global-news-container"></div>
+
+        </section>
+
+        <!-- BARRA LATERAL -->
+        <aside class="sidebar">
+            <h4 class="sidebar-title">📅 Próximos Eventos</h4>
+            <div class="card-excerpt" style="font-size: 0.9rem; color: #4a5568; margin-bottom: 1.5rem;">
+                <p style="margin-bottom: 0.6rem;"><strong>• 18 de Junio:</strong> Sustentación de proyectos finales de Ingeniería de Software.</p>
+                <p style="margin-bottom: 0.6rem;"><strong>• 20 de Junio:</strong> Ceremonia de entrega de reconocimientos de Investigación.</p>
+            </div>
+
+            <h4 class="sidebar-title" style="border-bottom-color: var(--color-cultura);">💡 Enlaces Destacados</h4>
+            <div class="card-excerpt" style="font-size: 0.9rem;">
+                <a href="#" onclick="verificarAccesoForo('estudiantes'); return false;" style="color: var(--primary); text-decoration: none; display: block; margin-bottom: 0.5rem; font-weight: 600;">👉 ¡Revisa el Foro Estudiantil aquí!</a>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- 3. CONFIGURACIÓN DE ACCESIBILIDAD -->
+    <div class="accessibility-toggle" id="acc-toggle" onclick="toggleAccessibilityPanel()">⚙️</div>
+    
+    <div class="accessibility-panel" id="acc-panel">
+        <span class="panel-close" onclick="toggleAccessibilityPanel()">✕</span>
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 700;">Accesibilidad</h3>
+        <div class="panel-section">
+            <h4>Paleta de Colores</h4>
+            <select id="theme-select" class="panel-select" onchange="changeTheme(this.value)">
+                <option value="light">☀️ Modo Claro</option>
+                <option value="dark">🌑 Modo Oscuro Premium</option>
+                <option value="warm">🍂 Modo Lectura Cálido</option>
+            </select>
+        </div>
+        <div class="panel-section">
+            <h4>Tipografía</h4>
+            <select id="font-select" class="panel-select" onchange="changeFont(this.value)">
+                <option value="default">Sans-serif</option>
+                <option value="arial">Arial</option>
+                <option value="times">Times New Roman</option>
+                <option value="comic">Comic Sans</option>
+            </select>
+        </div>
+        <div class="panel-section">
+            <h4>Tamaño del Texto</h4>
+            <select id="size-select" class="panel-select" onchange="changeSize(this.value)">
+                <option value="normal">Normal</option>
+                <option value="small">Pequeño</option>
+                <option value="large">Grande</option>
+            </select>
+        </div>
+        <div class="panel-section">
+            <button id="dyslexic-btn" class="switch-btn" onclick="toggleDyslexicMode()">Modo Dislexia</button>
+        </div>
+    </div>
+
+    <!-- 4. FOOTER -->
+    <footer class="footer">
+        <p>© 2026 U-Social - Red de Comunicación Universitaria.</p>
+    </footer>
+
+    <!-- 5. INYECCIÓN CRÍTICA DE SCRIPTS -->
+    <script src="js/main.js"></script>
+    <script src="js/custom.js"></script>
+
+    <!-- MOTOR INCRUSTADO BLINDADO -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let usuarioActivo = null;
+        try {
+            const storedUser = localStorage.getItem("usuario_logeado");
+            if (storedUser) usuarioActivo = JSON.parse(storedUser);
+        } catch (e) {}
+
+        const adminFormContainer = document.getElementById("admin-form-container");
+        const globalNewsContainer = document.getElementById("global-news-container");
+
+        const noticiasPorDefecto = [
+            {
+                id: 1,
+                titulo: "U-Social estrena su nueva plataforma de comunicación interna",
+                meta: "Por: Oficina de Prensa | Hace 1 hora",
+                extracto: "Hoy se dio luz verde al ecosistema digital que unifica los foros estudiantiles, docentes y herramientas de accesibilidad premium.",
+                categoria: "global",
+                multimedia: ""
+            },
+            {
+                id: 2,
+                titulo: "Convocatoria abierta para el torneo interfacultades de Deportes 2026",
+                meta: "Por: Área de Deportes | Ayer",
+                extracto: "Inscripciones abiertas desde este lunes para fútbol, baloncesto y eSports. Revisa los requisitos con tu representante.",
+                categoria: "deporte",
+                multimedia: ""
+            }
+        ];
+
+        window.noticiasGlobales = JSON.parse(localStorage.getItem("noticias_globales")) || noticiasPorDefecto;
+        if (!localStorage.getItem("noticias_globales")) {
+            localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
+        }
+
+        // ACTIVACIÓN DE FUERZA BRUTA: Cambiado a true para que aparezca obligatoriamente
+        if (true) {
+            if (adminFormContainer) {
+                adminFormContainer.innerHTML = `
+                    <div class="card" style="margin-bottom: 2rem; border-top: 5px solid var(--color-global); background: var(--white); padding: 1.5rem; border-radius: 8px;">
+                        <span class="tag tag-global" style="background-color: var(--color-global); color: white; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold;">Modo Editor Autorizado</span>
+                        <h3 style="margin-top: 0.5rem; margin-bottom: 1rem; font-weight:800; color: inherit;">✍ ... Publicar Noticia en Primera Plana</h3>
+                        <div class="news-form">
+                            <div style="margin-bottom: 1rem;">
+                                <input type="text" id="news-title" placeholder="Título de la noticia" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background: transparent; color: inherit;">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <select id="news-category" class="panel-select" style="padding:0.7rem; width:100%; border:1px solid var(--gray); background: transparent; color: inherit;">
+                                    <option value="global">🟥 Noticia Global Institucional</option>
+                                    <option value="facultad">🟦 Novedad de Facultad / Académica</option>
+                                    <option value="deporte">🟩 Evento Deportivo</option>
+                                    <option value="cultura">🟪 Agenda Cultural y Social</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <textarea id="news-content" placeholder="Escribe el cuerpo de la noticia..." rows="4" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background: transparent; color: inherit; resize:vertical;"></textarea>
+                            </div>
+                            <div style="background: var(--light); padding: 0.8rem; border-radius: 6px; margin-bottom: 1rem; border: 1px dashed var(--gray);">
+                                <p style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.4rem; color: inherit;">🖼️ Imagen Portada (Opcional):</p>
+                                <input type="file" id="news-img" accept="image/*" style="width: 100%; font-size: 0.8rem; color: inherit;">
+                            </div>
+                            <button type="button" onclick="publicarNoticiaDirecta(event)" style="width:100%; background: var(--color-global); color:white; padding:0.8rem; font-size:1rem; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">🚀 Lanzar Noticia</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        window.publicarNoticiaDirecta = async (e) => {
+            if (e) e.preventDefault();
+            const tit = document.getElementById("news-title");
+            const cat = document.getElementById("news-category");
+            const cont = document.getElementById("news-content");
+            const img = document.getElementById("news-img");
+
+            if (!tit.value.trim() || !cont.value.trim()) {
+                alert("Por favor, llena el título y contenido.");
+                return;
+            }
+
+            let b64 = "";
+            if (img && img.files && img.files[0]) {
+                const reader = new FileReader();
+                b64 = await new Promise((res) => {
+                    reader.onload = () => res(reader.result);
+                    reader.readAsDataURL(img.files[0]);
+                });
+            }
+
+            let miRol = usuarioActivo && usuarioActivo.role ? usuarioActivo.role.toString().toLowerCase().trim() : "";
+            let fRol = "Administrador";
+            if (miRol === "dean" || miRol === "decano") fRol = "Decano";
+            if (miRol === "profesor" || miRol === "teacher") fRol = "Docente";
+
+            const nuevo = {
+                id: Date.now(),
+                titulo: tit.value,
+                meta: `Por: ${(usuarioActivo && usuarioActivo.name) || 'Dr. Alejandro Magna'} (${fRol}) | Ahora mismo`,
+                extracto: cont.value,
+                categoria: cat.value,
+                multimedia: b64
+            };
+
+            window.noticiasGlobales.unshift(nuevo);
+            localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
+
+            tit.value = "";
+            cont.value = "";
+            if (img) img.value = "";
+            window.renderNoticiasDirectas();
+        };
+
+        window.renderNoticiasDirectas = () => {
+            if (!globalNewsContainer) return;
+            globalNewsContainer.innerHTML = "";
+            window.noticiasGlobales.forEach(n => {
+                let cl = `tag-${n.categoria || 'global'}`;
+                let col = `var(--color-${n.categoria || 'global'})`;
+                let im = n.multimedia ? `<img src="${n.multimedia}" style="width:100%; max-height:350px; object-fit:cover; border-radius:6px; margin-top:1rem; display:block;">` : "";
+                
+                let btnB = `<button class="btn-delete-post" onclick="borrarNoticiaDirecta(${n.id})" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:0.85rem; font-weight:bold; margin-top:1rem; display:block; padding:0;">🗑️ Retirar Noticia</button>`;
+
+                globalNewsContainer.innerHTML += `
+                    <article class="card" style="border-top: 4px solid ${col}; margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 8px; background: var(--white);">
+                        <span class="tag ${cl}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${n.categoria}</span>
+                        <h4 style="margin-top:0.5rem; margin-bottom:0.3rem; font-weight:700; font-size:1.3rem; color: inherit;">${n.titulo}</h4>
+                        <p style="font-size:0.8rem; color:#718096; margin-bottom: 0.8rem;">${n.meta}</p>
+                        <p style="white-space: pre-wrap; font-size:0.95rem; line-height:1.5; color: inherit;">${n.extracto}</p>
+                        ${im} ${btnB}
+                    </article>
+                `;
+            });
+        };
+
+        window.borrarNoticiaDirecta = (id) => {
+            if (confirm("¿Retirar noticia?")) {
+                window.noticiasGlobales = window.noticiasGlobales.filter(n => n.id !== id);
+                localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
+                window.renderNoticiasDirectas();
+            }
+        };
+
+        window.renderNoticiasDirectas();
+    });
+    </script>
+</body>
+</html>
