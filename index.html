@@ -80,8 +80,8 @@
                 <p style="opacity: 0.7; font-size: 0.9rem; margin-top: 4px;">Información general de la universidad, eventos y carteleras principales.</p>
             </div>
 
-            <div class="card" style="border: 2px solid var(--primary-color, #10b981); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px;">
-                <h3 style="margin-bottom: 1rem; color: var(--primary-color, #10b981); font-weight: 700;">📰 Publicar Noticia Global</h3>
+            <div id="caja-publicar-inicio" class="card" style="border: 2px solid var(--primary-color, #10b981); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px; display: none;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color, #10b981); font-weight: 700;">📰 Publicar Noticia Global (Panel Administrador)</h3>
                 <form id="form-noticia-inicio">
                     <div style="margin-bottom: 1rem;">
                         <label style="display:block; margin-bottom:0.3rem; font-weight:bold; font-size:0.9rem;">Titular:</label>
@@ -124,14 +124,20 @@
 
             document.getElementById('form-noticia-inicio').addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                // Doble validación de seguridad en cliente antes de procesar el guardado
+                const sesion = localStorage.getItem('usuarioSesion');
+                if(!sesion) return alert("Acceso denegado.");
+                const rol = (JSON.parse(sesion).tipo || "").toLowerCase();
+                if(!['admin', 'administrador'].includes(rol)) {
+                    return alert("⛔ Operación prohibida: Solo los administradores pueden alterar la cartelera principal.");
+                }
+
                 const titulo = document.getElementById('news-title').value.trim();
                 const cuerpo = document.getElementById('news-body').value.trim();
                 const inputFile = document.getElementById('news-file');
                 const file = (inputFile && inputFile.files.length > 0) ? inputFile.files[0] : null;
-
-                let autor = "Usuario General";
-                const sesion = localStorage.getItem('usuarioSesion');
-                if(sesion) { autor = JSON.parse(sesion).nombre; }
+                const autor = JSON.parse(sesion).nombre;
 
                 if (file) {
                     const reader = new FileReader();
@@ -147,7 +153,7 @@
 
         function guardarNoticia(titulo, cuerpo, autor, fileData, fileType, fileName) {
             const ahora = new Date();
-            const fechaStr = ahora.toLocaleDateString('es-ES', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+            const fechaStr = GenericFecha = ahora.toLocaleDateString('es-ES', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
             
             const nuevaNoticia = {
                 id: Date.now(),
@@ -190,14 +196,13 @@
                 let adjuntoHTML = '';
                 if (item.fileData && item.fileType) {
                     if (item.fileType.startsWith('image/')) {
-                        /* CORRECCIÓN VISUAL: Contenedor flex con altura máxima y ajuste proporcionado de la imagen */
                         adjuntoHTML = `
                             <div style="margin-top:14px; width:100%; max-height:380px; overflow:hidden; border-radius:8px; background:rgba(0,0,0,0.2); display:flex; justify-content:center; align-items:center;">
                                 <img src="${item.fileData}" style="width:100%; max-width:100%; height:auto; max-height:380px; object-fit: contain; display:block;">
                             </div>
                         `;
                     } else if (item.fileType.startsWith('audio/')) {
-                        adjuntoHTML = `<div style="margin-top:12px;"><audio src="${item.fileData}" controls style="width:100%;"></audio></div>`;
+                        adjuntoHTML = `<div style="margin-top:12px;"><audio src="${item.fileData}" controls style="width:100%"></audio></div>`;
                     } else if (item.fileType.startsWith('video/')) {
                         adjuntoHTML = `<div style="margin-top:12px;"><video src="${item.fileData}" controls style="width:100%; max-height:200px; background:#000; border-radius:6px;"></video></div>`;
                     } else if (item.fileType === 'application/pdf') {
@@ -209,7 +214,7 @@
 
                 tarjeta.innerHTML = `
                     <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.6; margin-bottom:8px;">
-                        <strong>📢 Corresponsal: ${item.autor}</strong>
+                        <strong>📢 Corresponsal Oficial: ${item.autor}</strong>
                         <span>${item.fecha}</span>
                     </div>
                     <h3 style="font-size:1.4rem; font-weight:bold; margin-bottom:8px; color:var(--primary-color, #10b981);">${item.titulo}</h3>
@@ -232,21 +237,33 @@
             window.location.href = 'pages/detalle-post.html';
         }
 
-        // LÓGICA DE BARRA SUPERIOR DINÁMICA
+        // LÓGICA DE BARRA SUPERIOR DINÁMICA Y CONTROL DE ROLES DE EDICIÓN
         function logisticaSesionRaiz() {
             const btnLoginNav = document.getElementById('login-nav-btn');
             const btnLogout = document.getElementById('logout-btn');
             const btnAuth = document.getElementById('auth-btn');
+            const cajaPublicar = document.getElementById('caja-publicar-inicio');
+            
             const sesion = localStorage.getItem('usuarioSesion');
 
             if (sesion) {
+                const usuario = JSON.parse(sesion);
                 if (btnLoginNav) btnLoginNav.style.display = 'none';
                 if (btnLogout) btnLogout.style.display = 'inline-block';
-                if (btnAuth) btnAuth.innerHTML = `👤 Perfil (${JSON.parse(sesion).nombre})`;
+                if (btnAuth) btnAuth.innerHTML = `👤 Perfil (${usuario.nombre})`;
+
+                // CONTROL EXCLUSIVO: Mostrar la caja de publicación solo si es admin
+                const rol = (usuario.tipo || "").toLowerCase();
+                if (['admin', 'administrador'].includes(rol)) {
+                    if (cajaPublicar) cajaPublicar.style.display = 'block';
+                } else {
+                    if (cajaPublicar) cajaPublicar.style.display = 'none';
+                }
             } else {
                 if (btnLoginNav) btnLoginNav.style.display = 'inline-block';
                 if (btnLogout) btnLogout.style.display = 'none';
                 if (btnAuth) btnAuth.innerHTML = `👤 Perfil`;
+                if (cajaPublicar) cajaPublicar.style.display = 'none'; // Oculto si no hay sesión
             }
         }
 

@@ -120,6 +120,14 @@
     <script src="../js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+             /* CONTENCION DE SEGURIDAD INTERNA (Cierre de muro para usuarios sin sesión) */
+             const sesionTexto = localStorage.getItem('usuarioSesion');
+             if (!sesionTexto) {
+                 alert("⚠️ Acceso Restringido: Debes iniciar sesión para ingresar al Foro de Estudiantes.");
+                 window.location.replace('../index.html');
+                 return;
+             }
+
              logisticaSesionForo();
              cargarPostsForo('estudiantes');
 
@@ -131,7 +139,6 @@
                  const file = (inputFile && inputFile.files.length > 0) ? inputFile.files[0] : null;
 
                  let autor = "Estudiante Anónimo";
-                 const sesionTexto = localStorage.getItem('usuarioSesion');
                  if (sesionTexto) { autor = JSON.parse(sesionTexto).nombre; }
 
                  if (file) {
@@ -194,7 +201,6 @@
                 let adjuntoHTML = '';
                 if (item.fileData && item.fileType) {
                     if (item.fileType.startsWith('image/')) {
-                        /* SE CORRIGE EL CONTENEDOR DE LA IMAGEN EN EL FORO */
                         adjuntoHTML = `
                             <div style="margin-top:14px; width:100%; max-height:380px; overflow:hidden; border-radius:8px; background:rgba(0,0,0,0.2); display:flex; justify-content:center; align-items:center; clear:both;">
                                 <img src="${item.fileData}" style="width:100%; max-width:100%; height:auto; max-height:380px; object-fit: contain; display:block;">
