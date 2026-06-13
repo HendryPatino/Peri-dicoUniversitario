@@ -3,198 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U-Social | Foro Profesores</title>
-    <link rel="stylesheet" href="../css/styles.css"> <!-- Ajusta la ruta si está en otra carpeta -->
+    <title>U-Social | Sala de Profesores</title>
+    <link class="theme-element" rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        body.theme-dark {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        .card.dinamico {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            backdrop-filter: blur(8px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card.dinamico:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        input[type="file"]::-webkit-file-upload-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .btn-debate {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-color, #10b981);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 0.4rem 0.9rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-debate:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+    </style>
 </head>
-<body>
+<body class="theme-dark font-comic">
 
     <header class="header">
         <div class="header-container">
             <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='../index.html'">U-<span>Social</span></h1>
-            <nav class="nav">
+            <nav class="nav" style="display: flex; align-items: center; gap: 1rem;">
                 <a href="../index.html" class="nav-link">Inicio</a>
-                <a href="#" onclick="alert('Área restringida para estudiantes.'); return false;" class="nav-link">Foro Estudiantes</a>
-                <a href="foro_profesores.html" class="nav-link active">Foro Profesores</a>
-                <a href="../index.html" class="btn-auth">Volver al Inicio</a>
+                <a href="foro-estudiantes.html" class="nav-link">Foro Estudiantes</a>
+                <a href="foro-profesores.html" class="nav-link active">Foro Profesores</a>
+                <a href="perfil.html" id="auth-btn" class="nav-link">👤 Perfil</a>
+                
+                <button id="logout-btn" class="btn-auth" onclick="cerrarSesionForo(event)" style="background: #ef4444; border-color: #ef4444; color: white; padding: 0.4rem 1rem; font-size: 0.9rem; cursor: pointer; border-radius: 4px; display: none;">Cerrar Sesión</button>
             </nav>
         </div>
     </header>
 
-    <main class="main-container" id="vista-inicio-dashboard" style="margin-top: 2rem;">
+    <div class="container" style="margin-top: 2rem; display: grid; grid-template-columns: 2.5fr 1fr; gap: 2rem; min-height: 85vh;">
         
-        <!-- COLUMNA DEL CONTENIDO DEL FORO -->
-        <section class="section-block">
-            <div style="background: var(--color-facultad, #2b6cb0); color: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-                <h2 style="margin: 0; font-weight: 800;">👨‍🏫 Sala de Discusión Docente</h2>
-                <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.95rem;">Espacio exclusivo para el cuerpo docente: coordinación académica, proyectos de investigación y currículo.</p>
+        <main class="main-content">
+            <div class="section-title" style="margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-color, #10b981);">
+                <h2 style="font-size: 1.8rem; font-weight: 800;">👨‍🏫 Sala Virtual de Profesores e Investigadores</h2>
+                <p style="opacity: 0.7; font-size: 0.9rem; margin-top: 4px;">Espacio restringido para coordinación académica, circulares, actas oficiales y hilos de debate docente.</p>
             </div>
 
-            <!-- CAJA PARA CREAR UN NUEVO POST EN EL FORO DE PROFESORES -->
-            <div class="card" style="margin-bottom: 2rem; background: var(--white); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--color-facultad, #2b6cb0);">
-                <h3 style="margin-top: 0; margin-bottom: 1rem; font-weight: 700; color: inherit;">✏️ Publicar nota o debate académico</h3>
-                <div class="news-form">
+            <div class="card" style="border: 2px solid var(--primary-color, #10b981); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color, #10b981); font-weight: 700;">📝 Añadir Minuta o Archivo Docente</h3>
+                <form id="form-nuevo-post">
+                    
                     <div style="margin-bottom: 1rem;">
-                        <textarea id="foro-profes-content" placeholder="Escribe aquí el tema de discusión, minuta de reunión o propuesta de investigación..." rows="3" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background: transparent; color: inherit; resize:vertical; font-family: inherit;"></textarea>
+                        <label style="display:block; margin-bottom:0.3rem; font-weight:bold; font-size: 0.9rem;">Título o Asunto:</label>
+                        <input type="text" id="post-title" required placeholder="Ej: Minuta del Consejo Técnico / Entrega de Notas Primer Corte" style="width:100%; padding:0.6rem; border:1px solid rgba(255,255,255,0.15); border-radius:4px; background:rgba(255,255,255,0.05); color:inherit; font-family:inherit;">
                     </div>
-                    <button type="button" onclick="publicarEnForoProfesores(event)" style="width:100%; background: var(--color-facultad, #2b6cb0); color:white; padding:0.7rem; font-size:1rem; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Lanzar a la Sala de Profesores</button>
-                </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; margin-bottom:0.3rem; font-weight:bold; font-size: 0.9rem;">Detalles del Comunicado:</label>
+                        <textarea id="post-body" required rows="3" placeholder="Escriba los puntos clave del orden del día o circulares internas..." style="width:100%; padding:0.6rem; border:1px solid rgba(255,255,255,0.15); border-radius:4px; background:rgba(255,255,255,0.05); color:inherit; font-family:inherit; resize: vertical;"></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 1rem; background:rgba(255,255,255,0.02); padding:0.8rem; border-radius:4px; border:1px dashed rgba(255,255,255,0.15);">
+                        <label style="display:block; margin-bottom:0.5rem; font-weight:bold; opacity:0.8; font-size:0.85rem;">Adjuntar Evidencias Académicas (Imagen, Audio, Video, PDF):</label>
+                        <input type="file" id="post-file" accept="image/*, audio/*, video/*, .pdf" style="color:inherit; cursor:pointer; width: 100%;">
+                    </div>
+
+                    <button type="submit" class="btn-auth" style="background:var(--primary-color, #10b981); border-color:var(--primary-color, #10b981); padding:0.5rem 1.5rem; width:auto; font-weight: bold;">Distribuir a la Sala</button>
+                </form>
             </div>
 
-            <!-- CONTENEDOR DEL HILO DEL FORO -->
-            <h3 class="block-title" style="border-bottom-color: var(--color-facultad, #2b6cb0); color: var(--color-facultad, #2b6cb0);">
-                Comunicaciones y Debates Activos
-            </h3>
-            
-            <div id="foro-profes-container"></div>
-        </section>
+            <div id="posts-profesores-container" style="display: flex; flex-direction: column; gap: 1.2rem;">
+                </div>
+        </main>
 
-        <!-- BARRA LATERAL DEL FORO -->
         <aside class="sidebar">
-            <h4 class="sidebar-title">📌 Recordatorios Clave</h4>
-            <div class="card-excerpt" style="font-size: 0.85rem; color: inherit; line-height: 1.4;">
-                <p style="margin-bottom: 0.5rem;"><strong>• Subida de Notas:</strong> El cierre del primer corte es este viernes a la medianoche.</p>
-                <p style="margin-bottom: 0.5rem;"><strong>• Investigaciones:</strong> Revisar los borradores para la postulación a Colciencias/Convocatoria Interna.</p>
+            <div class="card dinamico" style="padding: 1.5rem; border-radius: 8px;">
+                <h3 style="margin-bottom: 0.8rem; font-weight: 700; font-size: 1.1rem; color: var(--primary-color, #10b981);">🔒 Control de Privacidad</h3>
+                <p style="font-size: 0.85rem; line-height: 1.6; opacity: 0.8; margin: 0;">
+                    Este panel contiene datos internos cifrados en el navegador. Todo documento cargado aquí o debate abierto solo es visible para personal acreditado con rango Docente o Administrativo.
+                </p>
             </div>
         </aside>
-    </main>
-
-    <!-- PANEL DE ACCESIBILIDAD -->
-    <div class="accessibility-toggle" id="acc-toggle" onclick="toggleAccessibilityPanel()">⚙️</div>
-    <div class="accessibility-panel" id="acc-panel">
-        <span class="panel-close" onclick="toggleAccessibilityPanel()">✕</span>
-        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 700;">Accesibilidad</h3>
-        <div class="panel-section">
-            <h4>Paleta de Colores</h4>
-            <select id="theme-select" class="panel-select" onchange="changeTheme(this.value)">
-                <option value="light">☀️ Modo Claro</option>
-                <option value="dark">🌑 Modo Oscuro Premium</option>
-                <option value="warm">🍂 Modo Lectura Cálido</option>
-            </select>
-        </div>
     </div>
 
-    <footer class="footer">
-        <p>© 2026 U-Social - Red de Comunicación Universitaria.</p>
+    <footer class="footer" style="margin-top: 2rem;">
+        <p>© 2026 U-Social - Intranet Docente.</p>
     </footer>
 
-    <script src="../js/main.js"></script>
-    <script src="../js/custom.js"></script>
-
-    <!-- MOTOR INTERACTIVO DE PROFESORES VINCULADO A PERFILES -->
+    <script src="../js/auth.js"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        let usuarioSesion = null;
-        try {
-            const stored = localStorage.getItem("usuarioSesion");
-            if (stored) usuarioSesion = JSON.parse(stored);
-        } catch(e) { console.error("Error al verificar sesión en foro de profesores:", e); }
+        document.addEventListener('DOMContentLoaded', () => {
+             // Control estricto de acceso en el cliente
+             const sesion = localStorage.getItem('usuarioSesion');
+             if (!sesion) {
+                 alert("⚠️ Acceso prohibido. Inicie sesión primero.");
+                 window.location.replace('../index.html');
+                 return;
+             }
+             const rol = (JSON.parse(sesion).tipo || "").toLowerCase();
+             if (!['admin', 'administrador', 'profesor', 'profe', 'docente'].includes(rol)) {
+                 alert("⛔ Tu rol de usuario no tiene credenciales válidas para esta sala.");
+                 window.location.replace('../index.html');
+                 return;
+             }
 
-        const container = document.getElementById("foro-profes-container");
+             logisticaSesionForo();
+             cargarPostsForo('profesores');
 
-        // Datos iniciales de simulación docente
-        const postsProfesPredeterminados = [
-            {
-                id: 601,
-                username: "rectoria", // Martha Benavídez también tiene presencia aquí
-                autorNombre: "Dra. Martha Benavídez",
-                contenido: "Estimados docentes, recuerden que mañana tendremos la sesión de Consejo Académico Extraordinario para evaluar el despliegue del nuevo plan curricular.",
-                fecha: "Hace 5 horas"
-            },
-            {
-                id: 602,
-                username: "profesor_marcos",
-                autorNombre: "Dr. Marcos Restrepo (Ciencias)",
-                contenido: "Enterado, Doctora. Ya tengo listos los indicadores de retención estudiantil de nuestra facultad para presentarlos en la mesa técnica.",
-                fecha: "Hace 2 horas"
-            }
-        ];
+             document.getElementById('form-nuevo-post').addEventListener('submit', function(e) {
+                 e.preventDefault();
+                 const titulo = document.getElementById('post-title').value.trim();
+                 const cuerpo = document.getElementById('post-body').value.trim();
+                 const inputFile = document.getElementById('post-file');
+                 const file = (inputFile && inputFile.files.length > 0) ? inputFile.files[0] : null;
+                 const autor = JSON.parse(sesion).nombre;
 
-        // Inicializar la base de datos de profesores en el localStorage
-        let postsForoProfesores = JSON.parse(localStorage.getItem("posts_foro_profesores"));
-        if (!postsForoProfesores || !Array.isArray(postsForoProfesores)) {
-            postsForoProfesores = postsProfesPredeterminados;
-            localStorage.setItem("posts_foro_profesores", JSON.stringify(postsForoProfesores));
-        }
+                 if (file) {
+                     const reader = new FileReader();
+                     reader.readAsDataURL(file);
+                     reader.onload = function(event) {
+                         guardarPost('profesores', titulo, cuerpo, autor, event.target.result, file.type, file.name);
+                     };
+                 } else {
+                     guardarPost('profesores', titulo, cuerpo, autor, null, null, null);
+                 }
+             });
+        });
 
-        // RENDERIZAR LAS PUBLICACIONES CON SUS ENLACES DINÁMICOS
-        window.renderizarPostsProfesores = () => {
-            if (!container) return;
-            container.innerHTML = "";
-
-            if (postsForoProfesores.length === 0) {
-                container.innerHTML = `<p style="text-align:center; padding: 2rem; color: #718096; background: var(--white); border-radius: 8px;">No hay temas propuestos en la mesa docente en este momento.</p>`;
-                return;
-            }
-
-            postsForoProfesores.forEach(p => {
-                const esAdmin = usuarioSesion && usuarioSesion.rol === "admin";
-                const esDueno = usuarioSesion && (usuarioSesion.username === p.username);
-                const botonBorrar = (esAdmin || esDueno) ? 
-                    `<button onclick="borrarPostProfe(${p.id})" style="background:none; border:none; color:#e53e3e; font-weight:bold; cursor:pointer; font-size:0.8rem; padding:0; margin-top:0.8rem; display:block;">🗑️ Remover Mensaje</button>` : "";
-
-                let aliasUser = p.username || "docente_anonimo";
-
-                container.innerHTML += `
-                    <article class="card" style="margin-bottom: 1.2rem; padding: 1.5rem; border-radius: 8px; background: var(--white); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
-                            
-                            <!-- 🔥 ENLACE CLICKEABLE HACIA EL PERFIL PÚBLICO DEL DOCENTE -->
-                            <span style="font-size: 0.9rem; color: var(--gray);">
-                                Por: <a href="perfil.html?user=${aliasUser}" style="color: var(--color-facultad, #2b6cb0); font-weight: bold; text-decoration: none; border-bottom: 1px dashed transparent;" onmouseover="this.style.borderBottomColor='var(--color-facultad, #2b6cb0)'" onmouseout="this.style.borderBottomColor='transparent'">
-                                    ${p.autorNombre} (@${aliasUser})
-                                </a>
-                            </span>
-                            
-                            <span style="font-size: 0.8rem; color: #718096;">${p.fecha}</span>
-                        </div>
-                        <p style="white-space: pre-wrap; margin: 0; font-size: 1rem; line-height: 1.5; color: inherit;">${p.contenido}</p>
-                        ${botonBorrar}
-                    </article>
-                `;
-            });
-        };
-
-        // ACCIÓN: PUBLICAR EN SALA DE PROFESORES
-        window.publicarEnForoProfesores = (e) => {
-            if (e) e.preventDefault();
-            const txt = document.getElementById("foro-profes-content");
+        function guardarPost(foroKey, titulo, cuerpo, autor, fileData, fileType, fileName) {
+            const ahora = new Date();
+            const fechaStr = ahora.toLocaleDateString('es-ES', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
             
-            if (!txt || !txt.value.trim()) {
-                alert("Por favor escribe un mensaje antes de publicar.");
-                return;
-            }
-
-            if (!usuarioSesion) {
-                alert("Acceso denegado. No se detecta una sesión activa.");
-                return;
-            }
-
-            const nuevoMensaje = {
+            const nuevoPost = {
                 id: Date.now(),
-                username: usuarioSesion.username || "docente_anonimo",
-                autorNombre: usuarioSesion.nombre || "Docente Titular",
-                contenido: txt.value.trim(),
-                fecha: "Ahora mismo"
+                titulo: titulo,
+                cuerpo: cuerpo,
+                autor: autor,
+                fecha: fechaStr,
+                fileData: fileData,
+                fileType: fileType,
+                nombreArchivo: fileName,
+                comentarios: []
             };
 
-            postsForoProfesores.unshift(nuevoMensaje);
-            localStorage.setItem("posts_foro_profesores", JSON.stringify(postsForoProfesores));
-            
-            txt.value = "";
-            window.renderizarPostsProfesores();
-        };
+            const posts = JSON.parse(localStorage.getItem(`posts_${foroKey}`)) || [];
+            posts.push(nuevoPost);
+            localStorage.setItem(`posts_${foroKey}`, JSON.stringify(posts));
 
-        // ACCIÓN: ELIMINAR MENSAJE
-        window.borrarPostProfe = (id) => {
-            if (!confirm("¿Deseas retirar esta comunicación docente?")) return;
-            postsForoProfesores = postsForoProfesores.filter(p => p.id !== id);
-            localStorage.setItem("posts_foro_profesores", JSON.stringify(postsForoProfesores));
-            window.renderizarPostsProfesores();
-        };
+            document.getElementById('form-nuevo-post').reset();
+            cargarPostsForo(foroKey);
+        }
 
-        // Inicializar Render
-        window.renderizarPostsProfesores();
-    });
+        function cargarPostsForo(foroKey) {
+            const contenedor = document.getElementById(`posts-${foroKey}-container`);
+            if (!contenedor) return;
+            contenedor.innerHTML = "";
+
+            const posts = JSON.parse(localStorage.getItem(`posts_${foroKey}`)) || [];
+
+            if (posts.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="card" style="text-align:center; opacity:0.5; padding:2.5rem; border-radius: 8px;">
+                        <p style="font-size: 1rem;">📂 No hay comunicados ni registros compartidos en este muro docente todavía.</p>
+                    </div>`;
+                return;
+            }
+
+            [...posts].reverse().forEach(item => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card dinamico';
+                tarjeta.style.padding = '1.5rem';
+                tarjeta.style.borderRadius = '8px';
+
+                let adjuntoHTML = '';
+                if (item.fileData && item.fileType) {
+                    if (item.fileType.startsWith('image/')) {
+                        /* SE CORRIGE EL CONTENEDOR DE LA IMAGEN PARA DOCENTES */
+                        adjuntoHTML = `
+                            <div style="margin-top:14px; width:100%; max-height:380px; overflow:hidden; border-radius:8px; background:rgba(0,0,0,0.2); display:flex; justify-content:center; align-items:center; clear:both;">
+                                <img src="${item.fileData}" style="width:100%; max-width:100%; height:auto; max-height:380px; object-fit: contain; display:block;">
+                            </div>
+                        `;
+                    } else if (item.fileType.startsWith('audio/')) {
+                        adjuntoHTML = `<div style="margin-top:12px; display:block; clear:both; width:100%;"><audio src="${item.fileData}" controls style="width:100%; display:block;"></audio></div>`;
+                    } else if (item.fileType.startsWith('video/')) {
+                        adjuntoHTML = `<div style="margin-top:12px; display:block; clear:both;"><video src="${item.fileData}" controls style="width:100%; max-height:250px; display:block; background:#000; border-radius:6px;"></video></div>`;
+                    } else if (item.fileType === 'application/pdf') {
+                        adjuntoHTML = `<div style="margin-top:12px; display:block; clear:both;"><a href="${item.fileData}" download="${item.nombreArchivo || 'archivo.pdf'}" class="btn-auth" style="display:inline-flex; width:auto; font-size:0.85rem; padding:0.4rem 1rem; background:var(--primary-color, #10b981); text-decoration:none; color:white; font-weight:bold; border-radius:4px;">📄 Descargar: ${item.nombreArchivo || 'Documento PDF'}</a></div>`;
+                    }
+                }
+
+                const numComentarios = item.comentarios ? item.comentarios.length : 0;
+
+                tarjeta.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.6; margin-bottom:8px;">
+                        <strong style="color: var(--primary-color, #10b981);">💼 Profe. ${item.autor}</strong>
+                        <span>${item.fecha}</span>
+                    </div>
+                    <h3 style="font-size:1.3rem; font-weight:bold; margin-bottom:8px; color:var(--primary-color, #10b981);">${item.titulo || 'Sin Asunto'}</h3>
+                    <p style="white-space:pre-wrap; opacity:0.9; font-size:0.95rem; line-height:1.6;">${item.cuerpo}</p>
+                    ${adjuntoHTML}
+                    
+                    <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                        <button onclick="irAlDebate('profesores', ${item.id})" class="btn-debate">
+                            💬 Debatir (${numComentarios})
+                        </button>
+                    </div>
+                `;
+                contenedor.appendChild(tarjeta);
+            });
+        }
+
+        function irAlDebate(origen, idPost) {
+            localStorage.setItem('debate_origen_key', origen);
+            localStorage.setItem('debate_post_id', idPost);
+            window.location.href = 'detalle-post.html';
+        }
+
+        function logisticaSesionForo() {
+            const btnLogout = document.getElementById('logout-btn');
+            const btnAuth = document.getElementById('auth-btn');
+            const sesion = localStorage.getItem('usuarioSesion');
+            if (sesion) {
+                if (btnLogout) btnLogout.style.display = 'inline-block';
+                if (btnAuth) btnAuth.innerHTML = `👤 Perfil (${JSON.parse(sesion).nombre})`;
+            }
+        }
+
+        function cerrarSesionForo(e) {
+            if (e) e.preventDefault();
+            if (confirm('¿Cerrar sesión activa?')) {
+                localStorage.removeItem('usuarioSesion');
+                window.location.replace('../index.html');
+            }
+        }
     </script>
 </body>
 </html>

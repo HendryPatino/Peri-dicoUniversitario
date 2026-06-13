@@ -1,19 +1,33 @@
+// ==========================================================================
+// MOTOR DE PERIÓDICO DIGITAL E INICIO (inicio.js) - VERSIÓN ULTRA-ESTABLE
+// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. OBTENER USUARIO LOGUEADO
+    // 1. OBTENER USUARIO LOGUEADO DESDE LA LLAVE UNIFICADA O VARIABLES SUELTAS
     let usuarioActivo = null;
     try {
-        const storedUser = localStorage.getItem("usuario_logeado");
+        const storedUser = localStorage.getItem("usuarioSesion");
         if (storedUser) {
             usuarioActivo = JSON.parse(storedUser);
+        } else {
+            // Plan B de compatibilidad por si existen las variables sueltas tradicionales
+            const nombreSuelto = localStorage.getItem('userName');
+            const rolSuelto = localStorage.getItem('userRole');
+            if (nombreSuelto) {
+                usuarioActivo = {
+                    nombre: nombreSuelto,
+                    tipo: (rolSuelto === 'admin' || rolSuelto === 'profe') ? 'Docente' : 'Estudiante',
+                    rol: rolSuelto
+                };
+            }
         }
     } catch (err) {
-        console.error("Error al leer usuario:", err);
+        console.error("Error al leer usuario en inicio:", err);
     }
 
     const adminFormContainer = document.getElementById("admin-form-container");
     const globalNewsContainer = document.getElementById("global-news-container");
 
-    // 2. BASE DE DATOS INICIAL
+    // 2. BASE DE DATOS INICIAL DE NOTICIAS DE LA PORTADA
     const noticiasPorDefecto = [
         {
             id: 1,
@@ -30,118 +44,76 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
     }
 
-    // 3. INYECTAR FORMULARIO CON FUNCIÓN INTEGRADA DIRECTA (ONCLICK)
-    if (usuarioActivo && (usuarioActivo.role === "admin" || usuarioActivo.role === "dean" || usuarioActivo.role === "profesor" || usuarioActivo.role === "teacher")) {
-        if (adminFormContainer) {
+    // 3. MOSTRAR U OCULTAR PANEL DE PUBLICACIÓN DE PRENSA (ADMINS O REDACTORES)
+    if (adminFormContainer) {
+        if (usuarioActivo && (usuarioActivo.rol === "admin" || usuarioActivo.rol === "redactor" || localStorage.getItem('userRole') === 'admin')) {
+            adminFormContainer.style.display = "block";
             adminFormContainer.innerHTML = `
-                <div class="card" style="margin-bottom: 2rem; border-top: 5px solid var(--color-global); background: var(--white); padding: 1.5rem; border-radius: 8px;">
-                    <span class="tag tag-global" style="background-color: var(--color-global); color: white; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold;">Modo Editor Autorizado</span>
-                    <h3 style="margin-top: 0.5rem; margin-bottom: 1rem; font-weight:800;">✍️ Publicar Noticia en Primera Plana</h3>
-                    
-                    <div class="news-form">
-                        <div style="margin-bottom: 1rem;">
-                            <input type="text" id="news-title" placeholder="Título impactante de la noticia" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background:transparent; color:inherit;">
+                <div class="new-post-box" style="background:#fff; padding:1.5rem; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.05); margin-bottom:2rem;">
+                    <h3 style="margin-bottom:1rem; color:#1a365d; font-weight:700;">📰 Publicar Noticia Institucional</h3>
+                    <form id="news-form">
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:0.3rem; font-weight:600;">Título de la Noticia</label>
+                            <input type="text" id="news-title" class="form-control" placeholder="Ej: Suspensión de actividades por mantenimiento..." required style="width:100%; padding:0.5rem; border:1px solid #cbd5e0; border-radius:4px;">
                         </div>
-                        
-                        <div style="margin-bottom: 1rem;">
-                            <select id="news-category" class="panel-select" style="padding:0.7rem; width:100%; border:1px solid var(--gray); background:transparent; color:inherit;">
-                                <option value="global">🟥 Noticia Global Institucional</option>
-                                <option value="facultad">🟦 Novedad de Facultad / Académica</option>
-                                <option value="deporte">🟩 Evento Deportivo</option>
-                                <option value="cultura">🟪 Agenda Cultural y Social</option>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:0.3rem; font-weight:600;">Categoría</label>
+                            <select id="news-category" class="form-control" style="width:100%; padding:0.5rem; border:1px solid #cbd5e0; border-radius:4px;">
+                                <option value="global">Aviso Global</option>
+                                <option value="facultad">Académico</option>
+                                <option value="deporte">Deportes</option>
+                                <option value="cultura">Cultura</option>
                             </select>
                         </div>
-
-                        <div style="margin-bottom: 1rem;">
-                            <textarea id="news-content" placeholder="Escribe el cuerpo completo de la noticia o comunicado oficial..." rows="4" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background:transparent; color:inherit; resize:vertical;"></textarea>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block; margin-bottom:0.3rem; font-weight:600;">Cuerpo de la Noticia</label>
+                            <textarea id="news-content" class="form-control" rows="3" placeholder="Escribe el desarrollo completo del boletín de prensa..." required style="width:100%; padding:0.5rem; border:1px solid #cbd5e0; border-radius:4px; font-family:inherit;"></textarea>
                         </div>
-
-                        <div style="background: var(--light); padding: 0.8rem; border-radius: 6px; margin-bottom: 1rem; border: 1px dashed var(--gray);">
-                            <p style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.4rem; color: var(--dark);">🖼️ Fotografía de Portada (Opcional):</p>
-                            <input type="file" id="news-img" accept="image/*" style="width: 100%; font-size: 0.8rem; color:inherit;">
+                        <div class="form-group" style="margin-bottom:1.2rem;">
+                            <label style="display:block; margin-bottom:0.3rem; font-weight:600;">Adjuntar Imagen Ilustrativa (Opcional)</label>
+                            <input type="file" id="news-file" accept="image/*" style="font-size:0.9rem;">
                         </div>
-
-                        <!-- LLAMADA DIRECTA POR FUNCIÓN ONCLICK -->
-                        <button type="button" onclick="publicarNoticiaManual(event)" style="width:100%; background: var(--color-global); color:white; padding:0.8rem; font-size:1rem; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">🚀 Lanzar Noticia</button>
-                    </div>
+                        <button type="button" onclick="publicarNoticiaManual()" class="btn btn-primary" style="background:#1a365d; color:#fff; padding:0.5rem 1.5rem; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Lanzar Comunicado</button>
+                    </form>
                 </div>
             `;
+        } else {
+            adminFormContainer.style.display = "none";
         }
     }
 
-    // 4. FUNCIÓN GLOBAL DE PUBLICACIÓN IMPEDIBLE
-    window.publicarNoticiaManual = async (e) => {
-        if (e) e.preventDefault();
-        
-        const txtTitulo = document.getElementById("news-title");
-        const selCategoria = document.getElementById("news-category");
-        const txtContenido = document.getElementById("news-content");
-        const fileImg = document.getElementById("news-img");
-
-        if (!txtTitulo.value.trim() || !txtContenido.value.trim()) {
-            alert("Por favor, completa el título y el contenido de la noticia.");
-            return;
-        }
-
-        let fotoBase64 = "";
-        if (fileImg && fileImg.files && fileImg.files[0]) {
-            try {
-                fotoBase64 = await conversionBase64(fileImg.files[0]);
-            } catch (err) {
-                console.error("Error al procesar la foto:", err);
-            }
-        }
-
-        let firmaRol = "Administrador";
-        if (usuarioActivo && usuarioActivo.role === "dean") firmaRol = "Decano";
-        if (usuarioActivo && (usuarioActivo.role === "profesor" || usuarioActivo.role === "teacher")) firmaRol = "Docente";
-
-        const postNuevo = {
-            id: Date.now(),
-            titulo: txtTitulo.value,
-            meta: `Por: ${(usuarioActivo && usuarioActivo.name) || 'Directivo'} (${firmaRol}) | Ahora mismo`,
-            extracto: txtContenido.value,
-            categoria: selCategoria.value,
-            multimedia: fotoBase64
-        };
-
-        window.noticiasGlobales.unshift(postNuevo);
-        localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
-
-        // Limpiar inputs
-        txtTitulo.value = "";
-        txtContenido.value = "";
-        if (fileImg) fileImg.value = "";
-
-        // Redibujar
-        window.dibujarNoticias();
-    };
-
-    // 5. FUNCIÓN DE RENDERIZADO
-    window.dibujarNoticias = () => {
+    // 4. RENDERIZADO ATÓMICO DE NOTICIAS CON CLASES CSS ORIGINALES
+    window.renderNoticias = () => {
         if (!globalNewsContainer) return;
         globalNewsContainer.innerHTML = "";
 
-        window.noticiasGlobales.forEach(noticia => {
-            let tagClase = `tag-${noticia.categoria || 'global'}`;
-            let bordeColor = `var(--color-${noticia.categoria || 'global'})`;
-            let renderImagen = noticia.multimedia ? `<img src="${noticia.multimedia}" style="width:100%; max-height:350px; object-fit:cover; border-radius:6px; margin-top:1rem; display:block;">` : "";
+        if (window.noticiasGlobales.length === 0) {
+            globalNewsContainer.innerHTML = `
+                <div class="post-card" style="text-align:center; opacity:0.6; padding:2rem; background:#fff; border-radius:8px;">
+                    <p>📰 No hay comunicados de prensa emitidos el día de hoy.</p>
+                </div>`;
+            return;
+        }
 
-            let botonBorrar = "";
-            if (usuarioActivo && (usuarioActivo.role === "admin" || usuarioActivo.role === "dean" || usuarioActivo.role === "profesor" || usuarioActivo.role === "teacher")) {
-                botonBorrar = `
-                    <button class="btn-delete-post" onclick="eliminarNoticia(${noticia.id})" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:0.85rem; font-weight:bold; margin-top:1rem; display:block; padding:0;">
-                        🗑️ Retirar de Primera Plana
-                    </button>
-                `;
-            }
+        [...window.noticiasGlobales].reverse().forEach((noticia) => {
+            const tagClase = noticia.categoria || "global";
+            
+            // Validar de forma segura permisos de eliminación mediante el objeto unificado
+            const esAdmin = usuarioActivo && (usuarioActivo.rol === "admin" || localStorage.getItem('userRole') === 'admin');
+            const botonBorrar = esAdmin 
+                ? `<button class="btn-delete" onclick="eliminarNoticia(${noticia.id})" style="background:none; border:none; color:#e53e3e; font-weight:600; cursor:pointer; margin-top:1rem; font-size:0.9rem; display:block;"><i class="fas fa-trash"></i> Retirar del Periódico</button>` 
+                : "";
+
+            const renderImagen = noticia.multimedia 
+                ? `<div style="margin-top:1rem; max-height:300px; overflow:hidden; border-radius:6px;"><img src="${noticia.multimedia}" style="width:100%; height:auto; object-fit:cover;" alt="Prensa"></div>` 
+                : "";
 
             globalNewsContainer.innerHTML += `
-                <article class="card" style="border-top: 4px solid ${bordeColor}; margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 8px; background: var(--white);">
-                    <span class="tag ${tagClase}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${noticia.categoria}</span>
-                    <h4 class="card-title" style="margin-top:0.5rem; margin-bottom:0.3rem; font-weight:700; font-size:1.3rem;">${noticia.titulo}</h4>
+                <article class="post-card ${tagClase}" id="noticia-${noticia.id}" style="background:#fff; border-radius:8px; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 4px 6px rgba(0,0,0,0.05);">
+                    <span class="tag ${tagClase}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${tagClase}</span>
+                    <h4 class="card-title" style="margin-top:0.5rem; margin-bottom:0.3rem; font-weight:700; font-size:1.3rem; color:#1a365d;">${noticia.titulo}</h4>
                     <p class="card-meta" style="font-size:0.8rem; color:#718096; margin-bottom: 0.8rem;">${noticia.meta}</p>
-                    <p class="card-excerpt" style="white-space: pre-wrap; font-size:0.95rem; line-height:1.5;">${noticia.extracto}</p>
+                    <p class="card-excerpt" style="white-space: pre-wrap; font-size:0.95rem; line-height:1.5; color:#4a5568;">${noticia.extracto}</p>
                     ${renderImagen}
                     ${botonBorrar}
                 </article>
@@ -149,6 +121,56 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+    // 5. MANEJADOR ASÍNCRONO DE PUBLICACIÓN MANUAL
+    window.publicarNoticiaManual = async () => {
+        const titleInput = document.getElementById("news-title");
+        const contentInput = document.getElementById("news-content");
+        const catSelect = document.getElementById("news-category");
+        const fileInput = document.getElementById("news-file");
+
+        const titulo = titleInput ? titleInput.value.trim() : "";
+        const contenido = contentInput ? contentInput.value.trim() : "";
+        const categoria = catSelect ? catSelect.value : "global";
+        const inputArchivo = (fileInput && fileInput.files.length > 0) ? fileInput.files[0] : null;
+
+        if (!titulo || !contenido) {
+            alert("Por favor completa los campos de título y contenido del boletín.");
+            return;
+        }
+
+        let imagenB64 = "";
+        if (inputArchivo) {
+            try { 
+                imagenB64 = await conversionBase64(inputArchivo); 
+            } catch (e) {
+                console.error("Error al convertir la imagen:", e);
+            }
+        }
+
+        // Usar los datos sincronizados del adaptador de sesión
+        const firmaAutor = usuarioActivo ? usuarioActivo.nombre : (localStorage.getItem('userName') || "Oficina de Prensa");
+        const rangoAutor = usuarioActivo ? usuarioActivo.tipo : "Moderador";
+
+        const nuevoComunicado = {
+            id: Date.now(),
+            titulo: titulo,
+            meta: `Por: ${firmaAutor} (${rangoAutor}) | Hace unos instantes`,
+            extracto: contenido,
+            categoria: categoria,
+            multimedia: imagenB64
+        };
+
+        window.noticiasGlobales.push(nuevoComunicado);
+        localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
+        
+        const formularioHtml = document.getElementById("news-form");
+        if (formularioHtml) formularioHtml.reset();
+        
+        window.renderNoticias();
+        alert("✨ ¡Circular oficial publicada en la portada de U-Social!");
+    };
+
+    // Auxiliar para la lectura de multimedia
     function conversionBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -158,14 +180,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // 6. ELIMINAR NOTICIA DE LA PORTADA
     window.eliminarNoticia = (id) => {
+        const esAdmin = usuarioActivo && (usuarioActivo.rol === "admin" || localStorage.getItem('userRole') === 'admin');
+        if (!esAdmin) {
+            alert("Acción no autorizada.");
+            return;
+        }
+
         if (confirm("¿Deseas retirar esta noticia del periódico principal?")) {
             window.noticiasGlobales = window.noticiasGlobales.filter(n => n.id !== id);
             localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
-            window.dibujarNoticias();
+            window.renderNoticias();
         }
     };
 
-    // Lanzar dibujado inicial
-    window.dibujarNoticias();
+    // Renderizado inicial al cargar la página
+    window.renderNoticias();
 });

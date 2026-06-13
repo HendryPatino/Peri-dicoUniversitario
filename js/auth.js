@@ -1,78 +1,46 @@
 // ==========================================================================
-// 1. "BASE DE DATOS" SIMULADA DE USUARIOS (Con los roles de tus especificaciones)
+// 1. BASE DE DATOS LOCAL UNIFICADA (Inmutable y protegida de caídas)
 // ==========================================================================
-const usuariosRegistrados = [
-    { 
-        email: "rector@u.com", 
-        pass: "123", 
-        rol: "admin", 
-        nombre: "Dr. Alejandro Magna",
-        tipo: "Decano",
-        bio: "Rector de la institución. Construyendo el futuro universitario.",
-        colorPerfil: "#1a365d" // Azul oscuro
-    },
-    { 
-        email: "profe@u.com", 
-        pass: "123", 
-        rol: "lector", 
-        nombre: "Dra. Maria Curie",
-        tipo: "Profesor",
-        bio: "Docente de la Facultad de Ciencias. Investigadora en física cuántica.",
-        colorPerfil: "#38a169" // Verde
-    },
-    { 
-        email: "representante@u.com", 
-        pass: "123", 
-        rol: "redactor", 
-        nombre: "Santiago Paz",
-        tipo: "Representante Estudiantil",
-        bio: "Vocero del Consejo Superior. Defendiendo los derechos estudiantiles.",
-        colorPerfil: "#d69e2e" // Dorado/Naranja
-    },
-    { 
-
-        email: "estudiante@u.com", 
-        pass: "123", 
-        rol: "lector", 
-        nombre: "Kevin Silva",
-        tipo: "Estudiante",
-        bio: "Estudiante de Ingeniería de Sistemas. Amante del código de noche.",
-        colorPerfil: "#805ad5" // Morado
-    }
-];
+const usuariosPredefinidos = {
+    "admin@u.com": { clave: "admin123", rol: "admin", nombre: "Rector / Administrador" },
+    "profe@u.com": { clave: "profe123", rol: "profe", nombre: "Profesor Docente" },
+    "estudiante@u.com": { clave: "estudiante123", rol: "redactor", nombre: "Estudiante Representante" }
+};
 
 // ==========================================================================
-// 2. LÓGICA DEL FORMULARIO DE LOGIN
+// 2. MOTOR DE AUTENTICACIÓN Y VALIDACIÓN (ESCUCHADOR ATÓMICO)
 // ==========================================================================
-// Esperamos a que el HTML cargue por completo antes de buscar los elementos
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
-    const errorBox = document.getElementById('error-box');
-
-    // Si el formulario existe en la página actual (login.html)
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Evita que la página se recargue e interrumpa el JS
-            
-            // Capturar datos y limpiar espacios en blanco
-            const emailIngresado = document.getElementById('email').value.trim();
-            const passIngresado = document.getElementById('password').value;
+        loginForm.addEventListener('submit', function(evento) {
+            evento.preventDefault(); 
+            const emailInput = document.getElementById('email').value.trim();
+            const passwordInput = document.getElementById('password').value.trim();
+            const errorMessage = document.getElementById('error-message');
 
-            // Buscar si algún usuario coincide con las credenciales
-            const usuarioEncontrado = usuariosRegistrados.find(user => 
-                user.email === emailIngresado && user.pass === passIngresado
-            );
-
-            if (usuarioEncontrado) {
-                // ¡ÉXITO! Guardamos el objeto entero del usuario en LocalStorage convirtiéndolo a texto (JSON)
-                localStorage.setItem('usuarioSesion', JSON.stringify(usuarioEncontrado));
+            if (usuariosPredefinidos[emailInput] && usuariosPredefinidos[emailInput].clave === passwordInput) {
+                const usuarioValido = usuariosPredefinidos[emailInput];
                 
-                // Redirigir a la portada del periódico (está una carpeta hacia afuera)
-                window.location.href = "../index.html";
+                // Guardar llaves sueltas originales para compatibilidad
+                localStorage.setItem('userEmail', emailInput);
+                localStorage.setItem('userRole', usuarioValido.rol);
+                localStorage.setItem('userName', usuarioValido.nombre);
+                
+                // ✨ OPTIMIZACIÓN Y CORRECCIÓN: Se crea el objeto unificado que tus foros e inicio necesitan
+                const sesionEstructurada = {
+                    nombre: usuarioValido.nombre,
+                    tipo: (usuarioValido.rol === 'admin' || usuarioValido.rol === 'profe') ? 'Docente' : 'Estudiante',
+                    rol: usuarioValido.rol
+                };
+                localStorage.setItem('usuarioSesion', JSON.stringify(sesionEstructurada));
+                
+                alert(`¡Autenticación exitosa!\nBienvenido, ${usuarioValido.nombre}.`);
+                window.location.href = '../index.html';
             } else {
-                // ERROR: Si no coincide, mostramos el recuadro rojo de alerta
-                if (errorBox) {
-                    errorBox.style.display = "block";
+                if (errorMessage) {
+                    errorMessage.textContent = "❌ Correo institucional o contraseña incorrectos.";
+                    errorMessage.style.display = 'block';
                 }
             }
         });
@@ -80,41 +48,136 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================================================
-// 3. FUNCIÓN GLOBAL DE CIERRE DE SESIÓN (LOGOUT)
-// ==========================================================================
-function cerrarSesion() {
-    localStorage.removeItem('usuarioSesion'); // Borra los datos de la libreta del navegador
-    window.location.href = "../index.html";   // Redirige al inicio
-}
-
-// ==========================================================================
-// 4. CONTROL DE ACCESO SEGURO A LOS FOROS (verificarAccesoForo)
+// 3. GUARDIÁN DE SEGURIDAD (BLOQUEO CRUZADO ESTUDIANTES / MAESTROS)
 // ==========================================================================
 function verificarAccesoForo(tipoForo) {
-    const sesionTexto = localStorage.getItem('usuarioSesion');
+    const rolActivo = localStorage.getItem('userRole');
     
-    // Si no hay nadie logueado, rebota al login
-    if (!sesionTexto) {
-        alert("🔒 Acceso denegado. Debes iniciar sesión para ingresar a los foros comunitarios.");
-        // Evaluamos si estamos en la raíz o dentro de una carpeta para no romper la ruta
-        const rutaLogin = window.location.pathname.includes('pages/') ? 'login.html' : 'pages/login.html';
-        window.location.href = rutaLogin;
-        return;
+    if (!rolActivo) {
+        alert("⚠️ Acceso denegado. Debes iniciar sesión.");
+        window.location.href = window.location.pathname.includes('/pages/') ? 'login.html' : 'pages/login.html';
+        return false;
     }
 
-    const usuario = JSON.parse(sesionTexto);
+    if (tipoForo === 'profesores' && rolActivo === 'redactor') {
+        alert("🛑 Error: Los estudiantes no tienen autorización para acceder al Foro de Profesores.");
+        window.location.href = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
+        return false;
+    }
 
-    if (tipoForo === 'profesores') {
-        // Solo entran Profesores (tipo Profesor) y el Rector (admin)
-        if (usuario.tipo === 'Profesor' || usuario.rol === 'admin') {
-            window.location.href = window.location.pathname.includes('pages/') ? 'foro-profesores.html' : 'pages/foro-profesores.html';
-        } else {
-            alert("⚠️ Este foro es exclusivo para el cuerpo docente y administrativo. Tu cuenta de " + usuario.tipo + " no tiene permisos.");
-        }
+    if (tipoForo === 'estudiantes' && rolActivo === 'profe') {
+        alert("🛑 Error: Los docentes no tienen autorización para acceder al Foro de Estudiantes.");
+        window.location.href = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
+        return false;
+    }
+
+    redireccionarA(tipoForo);
+    return true;
+}
+
+// ==========================================================================
+// 4. DIRECCIONADOR DE RUTAS QUIRÚRGICO
+// ==========================================================================
+function redireccionarA(destino) {
+    const yaEnPages = window.location.pathname.includes('/pages/');
+    const objetivo = String(destino).trim().toLowerCase();
+
+    if (objetivo === 'profesores' || objetivo === 'profe') {
+        window.location.href = yaEnPages ? 'foro-profesores.html' : 'pages/foro-profesores.html';
+        return; 
     } 
-    
-    if (tipoForo === 'estudiantes') {
-        // Al foro de estudiantes entra cualquiera que esté registrado (Alumnos, Profesores, Representantes, Rector)
-        window.location.href = window.location.pathname.includes('pages/') ? 'foro-estudiantes.html' : 'pages/foro-estudiantes.html';
+    if (objetivo === 'estudiantes' || objetivo === 'redactor' || objetivo === 'estudiante') {
+        window.location.href = yaEnPages ? 'foro-estudiantes.html' : 'pages/foro-estudiantes.html';
+        return; 
     }
 }
+
+// ==========================================================================
+// 5. CONTROL DE PERMISOS, CATEGORÍAS Y MULTIMEDIA (PORTADA Y FOROS)
+// ==========================================================================
+function inicializarCajaPublicacion() {
+    const rolActivo = localStorage.getItem('userRole');
+    
+    // Mantenemos intacto tu sistema de simulación de publicaciones con adjuntos
+    const cajaForo = document.getElementById('box-nueva-publicacion');
+    if (cajaForo) {
+        const urlActual = window.location.pathname.toLowerCase();
+        const esForoEstudiantes = urlActual.includes('estudiante');
+        const esForoProfesores = urlActual.includes('profe');
+
+        if (rolActivo === 'admin' || (rolActivo === 'redactor' && esForoEstudiantes) || (rolActivo === 'profe' && esForoProfesores)) {
+            cajaForo.style.display = 'block';
+        } else {
+            cajaForo.style.display = 'none';
+        }
+        
+        const formPublicar = document.getElementById('form-publicar');
+        if (formPublicar) {
+            formPublicar.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const titulo = document.getElementById('post-titulo').value;
+                const categoria = document.getElementById('post-categoria').value;
+                const archivoInput = document.getElementById('post-archivo');
+                
+                let infoArchivo = "Ninguno";
+                if (archivoInput && archivoInput.files.length > 0) {
+                    infoArchivo = `\n   • Nombre: ${archivoInput.files[0].name}`;
+                }
+                alert(`🚀 ¡Publicación Exitosa!\n\n📌 Título: ${titulo}\n📂 Sección: ${categoria.toUpperCase()}\n📎 Adjunto: ${infoArchivo}`);
+                formPublicar.reset();
+            });
+        }
+    }
+
+    const cajaInicio = document.getElementById('box-publicacion-inicio');
+    if (cajaInicio) {
+        if (rolActivo === 'admin') {
+            cajaInicio.style.display = 'block';
+        } else {
+            cajaInicio.style.display = 'none';
+        }
+
+        const formInicio = document.getElementById('form-publicar-inicio');
+        if (formInicio) {
+            formInicio.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const titulo = document.getElementById('inicio-titulo').value;
+                alert(`📰 ¡Noticia publicada!\n\n"${titulo}" se ha subido a la portada principal.`);
+                formInicio.reset();
+            });
+        }
+    }
+}
+
+// ==========================================================================
+// 6. FILTRO VISUAL AUTOMÁTICO (DESAPARECE LOS ENLACES DE LA NAV)
+// ==========================================================================
+function aplicarFiltroNavegacion() {
+    const rolActivo = localStorage.getItem('userRole');
+    const urlActual = window.location.pathname.toLowerCase();
+    const enlacesNav = document.querySelectorAll('.nav-link');
+    
+    enlacesNav.forEach(enlace => {
+        // ✨ CORRECCIÓN: Se limpian los puntos suspensivos que rompían la lectura del texto
+        const textoHtml = enlace.textContent.toLowerCase();
+        
+        if (rolActivo === 'redactor' && textoHtml.includes('profe')) {
+            enlace.style.display = 'none';
+        }
+        if (rolActivo === 'profe' && textoHtml.includes('estudiante')) {
+            enlace.style.display = 'none';
+        }
+    });
+
+    if (urlActual.includes('profesores') && rolActivo === 'redactor') {
+        window.location.href = '../index.html';
+    }
+    if (urlActual.includes('estudiantes') && rolActivo === 'profe') {
+        window.location.href = '../index.html';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    inicializarCajaPublicacion();
+    aplicarFiltroNavegacion();
+});

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Social | Hilo de Debate</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        body.theme-dark {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        .comentario-box {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--primary-color, #10b981);
+            padding: 0.8rem 1.2rem;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 0.8rem;
+        }
+    </style>
+</head>
+<body class="theme-dark font-comic">
+
+    <header class="header">
+        <div class="header-container">
+            <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='../index.html'">U-<span>Social</span></h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">⬅️ Volver a Inicio</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 2rem; max-width: 800px; min-height: 85vh;">
+        
+        <!-- POST PRINCIPAL SELECCIONADO -->
+        <div id="post-principal-focus">
+            <!-- Renderizado dinámico vía JS -->
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 2rem 0;">
+
+        <!-- CAJA DE COMENTARIOS -->
+        <div class="card" style="padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color, #10b981); font-weight: 700;">💬 Participar en el debate</h3>
+            <form id="form-comentario">
+                <textarea id="comment-body" required rows="3" placeholder="Escribe tu opinión, argumento o respuesta respetuosa..." style="width:100%; padding:0.6rem; border:1px solid rgba(255,255,255,0.15); border-radius:4px; background:rgba(255,255,255,0.05); color:inherit; font-family:inherit; resize:vertical; margin-bottom:1rem;"></textarea>
+                <button type="submit" class="btn-auth" style="background:var(--primary-color, #10b981); border-color:var(--primary-color, #10b981); padding:0.5rem 1.5rem; width:auto; font-weight:bold;">Enviar Comentario</button>
+            </form>
+        </div>
+
+        <!-- LISTA DE COMENTARIOS INYECTADOS -->
+        <h4 style="font-size: 1.1rem; margin-bottom: 1rem; opacity: 0.8;">Respuestas y Opiniones de la Comunidad:</h4>
+        <div id="comentarios-list-container">
+            <!-- Vía JS -->
+        </div>
+    </div>
+
+    <script>
+        let origenKey = '';
+        let postId = '';
+        let listaPostsGlobal = [];
+        let postEncontrado = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            origenKey = localStorage.getItem('debate_origen_key'); // 'inicio', 'estudiantes' o 'profesores'
+            postId = localStorage.getItem('debate_post_id');
+
+            if (!origenKey || !postId) {
+                window.location.replace('../index.html');
+                return;
+            }
+
+            // Mapear la base de datos correcta según dónde se originó
+            const dbKey = `posts_${origenKey}`;
+            listaPostsGlobal = JSON.parse(localStorage.getItem(dbKey)) || [];
+            postEncontrado = listaPostsGlobal.find(p => p.id == postId);
+
+            if (!postEncontrado) {
+                alert("El post original fue eliminado o no se encuentra.");
+                window.location.replace('../index.html');
+                return;
+            }
+
+            // Asegurar que el post tenga el array de comentarios inicializado
+            if (!postEncontrado.comentarios) {
+                postEncontrado.comentarios = [];
+            }
+
+            renderizarPostEnfoque();
+            renderizarComentarios();
+
+            // Guardar Comentario
+            document.getElementById('form-comentario').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const cuerpoComentario = document.getElementById('comment-body').value.trim();
+                
+                let autorComentario = "Anónimo";
+                const sesion = localStorage.getItem('usuarioSesion');
+                if (sesion) { autorComentario = JSON.parse(sesion).nombre; }
+
+                const ahora = new Date();
+                const fechaStr = ahora.toLocaleDateString('es-ES', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+
+                const nuevoComentario = {
+                    autor: autorComentario,
+                    cuerpo: cuerpoComentario,
+                    fecha: fechaStr
+                };
+
+                // Insertar en el post en memoria y persistir en la DB Local correcta
+                postEncontrado.comentarios.push(nuevoComentario);
+                localStorage.setItem(dbKey, JSON.stringify(listaPostsGlobal));
+
+                document.getElementById('comment-body').value = "";
+                renderizarComentarios();
+                
+                // Actualizar contadores si vuelves a Inicio
+                cargarNoticiasInicio(); 
+            });
+        });
+
+        function renderizarPostEnfoque() {
+            const container = document.getElementById('post-principal-focus');
+            
+            let adjuntoHTML = '';
+            if (postEncontrado.fileData && postEncontrado.fileType) {
+                if (postEncontrado.fileType.startsWith('image/')) {
+                    adjuntoHTML = `<div style="margin-top:12px; max-height:400px; overflow:hidden; border-radius:6px;"><img src="${postEncontrado.fileData}" style="width:100%; height:auto;"></div>`;
+                } else if (postEncontrado.fileType.startsWith('audio/')) {
+                    adjuntoHTML = `<div style="margin-top:12px;"><audio src="${postEncontrado.fileData}" controls style="width:100%;"></audio></div>`;
+                } else if (postEncontrado.fileType.startsWith('video/')) {
+                    adjuntoHTML = `<div style="margin-top:12px;"><video src="${postEncontrado.fileData}" controls style="width:100%; max-height:300px; background:#000; border-radius:6px;"></video></div>`;
+                } else if (postEncontrado.fileType === 'application/pdf') {
+                    adjuntoHTML = `<div style="margin-top:12px;"><a href="${postEncontrado.fileData}" download="${postEncontrado.nombreArchivo}" class="btn-auth" style="display:inline-flex; padding:0.4rem 1rem; background:#10b981; text-decoration:none; color:white; border-radius:4px;">📄 Descargar Documento</a></div>`;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="card" style="padding: 2rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem; opacity:0.6; margin-bottom:12px;">
+                        <strong>👤 Por: ${postEncontrado.autor}</strong>
+                        <span>${postEncontrado.fecha}</span>
+                    </div>
+                    <h2 style="font-size:1.8rem; font-weight:800; color:var(--primary-color, #10b981); margin-bottom:12px;">${postEncontrado.titulo || 'Sin Título'}</h2>
+                    <p style="white-space:pre-wrap; opacity:0.9; font-size:1.05rem; line-height:1.7;">${postEncontrado.cuerpo}</p>
+                    ${adjuntoHTML}
+                </div>
+            `;
+        }
+
+        function renderizarComentarios() {
+            const container = document.getElementById('comentarios-list-container');
+            container.innerHTML = "";
+
+            if (!postEncontrado.comentarios || postEncontrado.comentarios.length === 0) {
+                container.innerHTML = `<p style="opacity:0.5; font-style:italic; padding-left:10px;">Silencio en la sala... Nadie ha comentado este hilo todavía.</p>`;
+                return;
+            }
+
+            postEncontrado.comentarios.forEach(com => {
+                const item = document.createElement('div');
+                item.className = 'comentario-box';
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; opacity:0.6; margin-bottom:4px;">
+                        <strong>💬 ${com.autor}</strong>
+                        <span>${com.fecha}</span>
+                    </div>
+                    <p style="white-space:pre-wrap; font-size:0.92rem; opacity:0.95; line-height:1.5;">${com.cuerpo}</p>
+                `;
+                container.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>

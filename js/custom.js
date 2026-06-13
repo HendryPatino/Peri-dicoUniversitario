@@ -1,150 +1,168 @@
 // ==========================================================================
-// MOTOR DE PERSONALIZACIÓN UNIVERSAL DE ALTA FIABILIDAD (custom.js) - PULIDO
+// MOTOR DE PERSONALIZACIÓN UNIVERSAL (custom.js) - VERSIÓN CORREGIDA
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. INYECTAR EL PANEL DE DISEÑO DE FORMA INMEDIATA Y PRIORITARIA
-    const botonEngranaje = document.createElement('div');
-    botonEngranaje.className = 'accessibility-toggle';
-    botonEngranaje.id = 'acc-toggle';
-    botonEngranaje.textContent = '⚙️';
-    document.body.appendChild(botonEngranaje);
+    // 1. Limpieza de seguridad para evitar duplicados en el DOM
+    document.querySelectorAll('.accessibility-toggle, #acc-toggle').forEach((el, i) => { if(i > 0) el.remove(); });
+    document.querySelectorAll('.accessibility-panel, #acc-panel').forEach((el, i) => { if(i > 0) el.remove(); });
 
-    const panelHtml = document.createElement('div');
-    panelHtml.className = 'accessibility-panel';
-    panelHtml.id = 'acc-panel';
-    panelHtml.innerHTML = `
-        <span class="panel-close" id="acc-close">✕</span>
-        <h3 style="margin-bottom: 0.8rem; font-size: 1rem; font-weight: bold; color: #3182ce;">🎨 Personalizar Vista</h3>
-        
-        <div class="panel-section">
-            <h4 style="margin-bottom: 0.3rem; color: #3182ce; font-size: 0.85rem; font-weight: bold;">🌓 Estilo del Sitio</h4>
-            <select id="select-theme" class="panel-select" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0;">
-                <option value="default">Clásico Universitario</option>
-                <option value="theme-dark">Modo Oscuro 🌙</option>
-                <option value="theme-warm">Tono Cálido ☀️</option>
-            </select>
-        </div>
+    // 2. Inyectar Botón Flotante Original (Engranaje) si no existe
+    if (!document.getElementById('acc-toggle')) {
+        const toggle = document.createElement('div');
+        toggle.className = 'accessibility-toggle';
+        toggle.id = 'acc-toggle';
+        toggle.textContent = '⚙️';
+        document.body.appendChild(toggle);
+    }
 
-        <div class="panel-section">
-            <h4 style="margin-bottom: 0.3rem; color: #3182ce; font-size: 0.85rem; font-weight: bold;">🔤 Tipo de Letra</h4>
-            <select id="select-font" class="panel-select" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0;">
-                <option value="default">Por Defecto</option>
-                <option value="font-arial">Arial</option>
-                <option value="font-comic">Comic Sans</option>
-                <option value="font-times">Times New Roman</option>
-            </select>
-        </div>
+    // 3. Inyectar Estructura del Panel de Accesibilidad de GitHub
+    if (!document.getElementById('acc-panel')) {
+        const panel = document.createElement('div');
+        panel.className = 'accessibility-panel';
+        panel.id = 'acc-panel';
+        panel.innerHTML = `
+            <span class="panel-close" id="acc-close">✕</span>
+            <h3 style="margin-bottom: 0.8rem; font-size: 1rem; font-weight: bold; color: #3182ce;">🎨 Personalizar Vista</h3>
+            
+            <div class="panel-section">
+                <h4 style="margin-bottom: 0.3rem; color: #3182ce; font-size: 0.85rem; font-weight: bold;">🌓 Esquema de Color</h4>
+                <select id="select-theme" class="panel-select" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <option value="default">Clásico Universitario</option>
+                    <option value="theme-dark">Modo Oscuro 🌙</option>
+                    <option value="theme-warm">Tono Cálido ☀️</option>
+                </select>
+            </div>
 
-        <div class="panel-section">
-            <h4 style="margin-bottom: 0.3rem; color: #3182ce; font-size: 0.85rem; font-weight: bold;">📏 Tamaño del Texto</h4>
-            <select id="select-size" class="panel-select" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0;">
-                <option value="default">Normal</option>
-                <option value="size-small">Pequeño</option>
-                <option value="size-large">Grande</option>
-            </select>
-        </div>
+            <div class="panel-section">
+                <h4 style="margin-bottom: 0.3rem; color: #3182ce; font-size: 0.85rem; font-weight: bold;">🔤 Tipo de Letra</h4>
+                <select id="select-font" class="panel-select" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <option value="default">Por Defecto</option>
+                    <option value="font-arial">Arial</option>
+                    <option value="font-comic">Comic Sans</option>
+                    <option value="font-times">Times New Roman</option>
+                </select>
+            </div>
 
-        <div class="panel-section" style="margin-top: 0.5rem;">
-            <button id="btn-dyslexic" class="switch-btn" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0; cursor: pointer; font-weight: bold;">👁️ Modo Dislexia: No</button>
-        </div>
-    `;
-    document.body.appendChild(panelHtml);
+            <div class="panel-section">
+                <h4 style="margin-bottom: 0.3rem; color: #3182ce; font-size: 0.85rem; font-weight: bold;">📏 Tamaño de Letra</h4>
+                <select id="select-size" class="panel-select" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <option value="default">Normal</option>
+                    <option value="size-small">Pequeño</option>
+                    <option value="size-large">Grande</option>
+                </select>
+            </div>
 
-    // Capturar elementos recién creados
+            <div class="panel-section" style="margin-top: 0.5rem;">
+                <button id="btn-dyslexic" class="switch-btn" style="width: 100%; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e0; cursor: pointer; font-weight: bold;">👁️ Modo Dislexia: No</button>
+            </div>
+        `;
+        document.body.appendChild(panel);
+    }
+
+    // Capturar elementos
     const toggleBtn = document.getElementById('acc-toggle');
-    const panel = document.getElementById('acc-panel');
+    const panelDom = document.getElementById('acc-panel');
     const closeBtn = document.getElementById('acc-close');
-    const selectTheme = document.getElementById('select-theme');
-    const selectFont = document.getElementById('select-font');
-    const selectSize = document.getElementById('select-size');
-    const btnDyslexic = document.getElementById('btn-dyslexic');
+    const selTheme = document.getElementById('select-theme');
+    const selFont = document.getElementById('select-font');
+    const selSize = document.getElementById('select-size');
+    const btnDys = document.getElementById('btn-dyslexic');
 
-    // Manejo de clicks para abrir y cerrar el panel
-    toggleBtn.addEventListener('click', () => { panel.style.display = 'block'; toggleBtn.style.display = 'none'; });
-    closeBtn.addEventListener('click', () => { panel.style.display = 'none'; toggleBtn.style.display = 'flex'; });
+    // Manejo de clicks para mostrar/ocultar el panel
+    if (toggleBtn && panelDom) {
+        toggleBtn.onclick = (e) => {
+            e.stopPropagation();
+            panelDom.style.display = 'block';
+            toggleBtn.style.display = 'none';
+        };
+    }
+
+    if (closeBtn && panelDom) {
+        closeBtn.onclick = () => {
+            panelDom.style.display = 'none';
+            toggleBtn.style.display = 'flex';
+        };
+    }
+
+    document.addEventListener('click', (e) => {
+        if (panelDom && panelDom.style.display === 'block' && !panelDom.contains(e.target) && e.target !== toggleBtn) {
+            panelDom.style.display = 'none';
+            toggleBtn.style.display = 'flex';
+        }
+    });
 
     // ==========================================================================
-    // FUNCIÓN DE RENDERIZADO VISUAL SEGURO
+    // MOTOR CENTRAL: Sincronizado con las llaves exactas de main.js
     // ==========================================================================
-    const renderizarConfiguracion = () => {
+    const aplicarConfiguracion = () => {
+        const tema = localStorage.getItem('tema') || 'default';
+        const fuente = localStorage.getItem('fuente') || 'default';
+        const tamano = localStorage.getItem('tamano') || 'default';
+        const dislexia = localStorage.getItem('dislexia') === 'true';
+
+        // Sincronizar visualmente los elementos select
+        if (selTheme) selTheme.value = tema;
+        if (selSize) selSize.value = tamano;
+
+        // Limpiar clases de accesibilidad previas de forma segura
         document.body.classList.remove(
             'theme-dark', 'theme-warm', 
             'font-arial', 'font-comic', 'font-times', 
-            'size-small', 'size-large', 'mode-dyslexic'
+            'size-small', 'size-large', 'dyslexic-mode'
         );
 
-        const tema = localStorage.getItem('pref-tema') || 'default';
-        selectTheme.value = tema;
+        // Añadir las clases activas según almacenamiento
         if (tema !== 'default') document.body.classList.add(tema);
+        if (tamano !== 'default') document.body.classList.add(tamano);
 
-        const tamaño = localStorage.getItem('pref-tamaño') || 'default';
-        selectSize.value = tamaño;
-        if (tamaño !== 'default') document.body.classList.add(tamaño);
-
-        const dislexiaActiva = localStorage.getItem('pref-dislexia') === 'true';
-        if (dislexiaActiva) {
-            document.body.classList.add('mode-dyslexic');
-            btnDyslexic.textContent = "👁️ Modo Dislexia: SÍ";
-            btnDyslexic.classList.add('active');
-            selectFont.disabled = true;
-            selectFont.value = 'default';
+        if (dislexia) {
+            document.body.classList.add('dyslexic-mode');
+            if (btnDys) btnDys.textContent = "👁️ Modo Dislexia: SÍ";
+            if (selFont) { selFont.disabled = true; selFont.value = 'default'; }
         } else {
-            btnDyslexic.textContent = "👁️ Modo Dislexia: No";
-            btnDyslexic.classList.remove('active');
-            selectFont.disabled = false;
-            
-            const fuente = localStorage.getItem('pref-fuente') || 'default';
-            selectFont.value = fuente;
-            if (fuente !== 'default') document.body.classList.add(fuente);
+            if (btnDys) btnDys.textContent = "👁️ Modo Dislexia: No";
+            if (selFont) {
+                selFont.disabled = false;
+                selFont.value = fuente;
+                if (fuente !== 'default') document.body.classList.add(fuente);
+            }
         }
 
-        // --- CORRECCIÓN INTEGRAL DE CONTRASTE PARA TEXTOS REBELDES (INVISIBILIDAD) ---
-        const elementosConEstilo = document.querySelectorAll('[style*="color"]');
-        elementosConEstilo.forEach(el => {
-            // Guardar el color original de la plantilla si no se ha guardado ya
+        // --- PROTECCIÓN Y AJUSTE DE CONTRASTES DINÁMICOS ---
+        const elementosConColor = document.querySelectorAll('[style*="color"]');
+        elementosConColor.forEach(el => {
+            // ✨ CORRECCIÓN DE SEGURIDAD: Validar que panelDom exista antes de invocar .contains()
+            if (panelDom && panelDom.contains(el)) return;
+
             if (!el.dataset.originalColor) {
                 el.dataset.originalColor = el.style.color || window.getComputedStyle(el).color;
             }
 
             if (tema === 'theme-dark') {
-                // Forzar texto claro en Modo Oscuro
                 el.style.setProperty('color', '#edf2f7', 'important');
             } else if (tema === 'theme-warm') {
-                // Forzar texto marrón oscuro/legible en Tono Cálido (Sepia)
                 el.style.setProperty('color', '#4a2c11', 'important');
             } else {
-                // Al regresar al tema clásico, limpiamos las propiedades inyectadas
                 el.style.removeProperty('color');
-                if (el.dataset.originalColor) {
-                    el.style.color = el.dataset.originalColor;
-                }
+                if (el.dataset.originalColor) el.style.color = el.dataset.originalColor;
             }
         });
     };
 
-    // --- ESCUCHADORES DE EVENTOS EN TIEMPO REAL ---
-    selectTheme.addEventListener('change', (e) => {
-        localStorage.setItem('pref-tema', e.target.value);
-        renderizarConfiguracion();
-    });
+    // Escuchadores de eventos para guardar cambios al instante
+    if (selTheme) selTheme.onchange = (e) => { localStorage.setItem('tema', e.target.value); aplicarConfiguracion(); };
+    if (selFont) selFont.onchange = (e) => { localStorage.setItem('fuente', e.target.value); aplicarConfiguracion(); };
+    if (selSize) selSize.onchange = (e) => { localStorage.setItem('tamano', e.target.value); aplicarConfiguracion(); };
+    
+    if (btnDys) {
+        btnDys.onclick = () => {
+            const actual = localStorage.getItem('dislexia') === 'true';
+            localStorage.setItem('dislexia', !actual);
+            aplicarConfiguracion();
+        };
+    }
 
-    selectFont.addEventListener('change', (e) => {
-        localStorage.setItem('pref-fuente', e.target.value);
-        renderizarConfiguracion();
-    });
-
-    selectSize.addEventListener('change', (e) => {
-        localStorage.setItem('pref-tamaño', e.target.value);
-        renderizarConfiguracion();
-    });
-
-    btnDyslexic.addEventListener('click', () => {
-        const estadoActual = localStorage.getItem('pref-dislexia') === 'true';
-        localStorage.setItem('pref-dislexia', !estadoActual);
-        renderizarConfiguracion();
-    });
-
-    // Renderizar configuración al cargar la página
-    renderizarConfiguracion();
+    // Arrancar el motor en caliente
+    aplicarConfiguracion();
 });

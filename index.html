@@ -3,392 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U-Social | Periódico Universitario</title>
+    <title>U-Social | Inicio</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body.theme-dark {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        .card.dinamico {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            backdrop-filter: blur(8px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card.dinamico:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .btn-debate {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-color, #10b981);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 0.4rem 0.9rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-debate:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        /* Botón de login especial en la barra superior */
+        .btn-login-navbar {
+            background: var(--primary-color, #10b981);
+            color: white !important;
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .btn-login-navbar:hover {
+            opacity: 0.9;
+        }
+    </style>
 </head>
-<body>
+<body class="theme-dark font-comic">
 
     <header class="header">
         <div class="header-container">
-            <h1 class="logo" style="cursor:pointer;" onclick="window.location.href='index.html'">U-<span>Social</span></h1>
-            <nav class="nav">
-                <a href="index.html" class="nav-link">Inicio</a>
-                <a href="#" onclick="verificarAccesoForo('estudiantes'); return false;" class="nav-link">Foro Estudiantes</a>
-                <a href="#" onclick="verificarAccAccessoForo('profesores'); return false;" class="nav-link">Foro Profesores</a>
-                <a href="pages/login.html" id="auth-btn" class="btn-auth">Iniciar Sesión</a>
+            <h1 class="logo" style="cursor:pointer;" onclick="window.location.reload()">U-<span>Social</span></h1>
+            <nav class="nav" style="display: flex; align-items: center; gap: 1rem;">
+                <a href="index.html" class="nav-link active">Inicio</a>
+                <a href="pages/foro-estudiantes.html" class="nav-link">Foro Estudiantes</a>
+                <a href="#" onclick="redirigirForoProfesoresRaiz(event);" class="nav-link">Foro Profesores</a>
+                <a href="pages/perfil.html" id="auth-btn" class="nav-link">👤 Perfil</a>
+                
+                <a href="pages/login.html" id="login-nav-btn" class="btn-login-navbar">🔑 Iniciar Sesión</a>
+                <button id="logout-btn" class="btn-auth" onclick="cerrarSesionRaiz(event)" style="background: #ef4444; border-color: #ef4444; color: white; padding: 0.4rem 1rem; font-size: 0.9rem; cursor: pointer; border-radius: 4px; display: none;">Cerrar Sesión</button>
             </nav>
         </div>
     </header>
 
-    <div class="main-container" style="padding-top: 1.5rem; padding-bottom: 0;">
-        <div class="card" style="width: 100%; padding: 0.8rem 1.2rem; border-left: 5px solid var(--primary); background: var(--white); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: flex; gap: 0.8rem; align-items: center;">
-                <span style="font-size: 1.3rem;">🔍</span>
-                <input type="text" id="global-search" placeholder="Escribe tu búsqueda (título, noticia, noticiero de confianza...) y presiona Enter..." style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--gray); background: transparent; color: inherit; font-size: 1rem; outline: none;">
-                <button type="button" onclick="ejecutarBusquedaEstiloYouTube()" style="background: var(--primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer;">Buscar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- VISTA PRINCIPAL RESTAURADA -->
-    <main class="main-container" id="vista-inicio-dashboard">
+    <div class="container" style="margin-top: 2rem; display: grid; grid-template-columns: 2.5fr 1fr; gap: 2rem; min-height: 85vh;">
         
-        <section class="section-block">
-            <!-- Bloque seguro para el panel de administración -->
-            <div id="admin-form-container"></div>
+        <main class="main-content">
+            <div class="section-title" style="margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-color, #10b981);">
+                <h2 style="font-size: 1.8rem; font-weight: 800;">📢 Noticias y Prensa Comunitaria</h2>
+                <p style="opacity: 0.7; font-size: 0.9rem; margin-top: 4px;">Información general de la universidad, eventos y carteleras principales.</p>
+            </div>
 
-            <h3 class="block-title" style="border-bottom-color: var(--color-global); color: var(--color-global); margin-top: 1rem;">
-                Coreografía Informativa: Últimas Noticias
-            </h3>
-            
-            <div id="global-news-container"></div>
-        </section>
+            <div class="card" style="border: 2px solid var(--primary-color, #10b981); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color, #10b981); font-weight: 700;">📰 Publicar Noticia Global</h3>
+                <form id="form-noticia-inicio">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; margin-bottom:0.3rem; font-weight:bold; font-size:0.9rem;">Titular:</label>
+                        <input type="text" id="news-title" required placeholder="Ej: Suspensión de actividades por mantenimiento / Torneo de Ajedrez" style="width:100%; padding:0.6rem; border:1px solid rgba(255,255,255,0.15); border-radius:4px; background:rgba(255,255,255,0.05); color:inherit; font-family:inherit;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; margin-bottom:0.3rem; font-weight:bold; font-size:0.9rem;">Contenido:</label>
+                        <textarea id="news-body" required rows="3" placeholder="Detalles de la noticia de portada..." style="width:100%; padding:0.6rem; border:1px solid rgba(255,255,255,0.15); border-radius:4px; background:rgba(255,255,255,0.05); color:inherit; font-family:inherit; resize: vertical;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 1rem; background:rgba(255,255,255,0.02); padding:0.8rem; border-radius:4px; border:1px dashed rgba(255,255,255,0.15);">
+                        <input type="file" id="news-file" accept="image/*, audio/*, video/*, .pdf" style="color:inherit; cursor:pointer; width: 100%;">
+                    </div>
+                    <button type="submit" class="btn-auth" style="background:var(--primary-color, #10b981); border-color:var(--primary-color, #10b981); padding:0.5rem 1.5rem; width:auto; font-weight: bold;">Lanzar Noticia</button>
+                </form>
+            </div>
+
+            <div id="news-container" style="display: flex; flex-direction: column; gap: 1.2rem;">
+                </div>
+        </main>
 
         <aside class="sidebar">
-            <h4 class="sidebar-title">📅 Próximos Eventos</h4>
-            <div class="card-excerpt" style="font-size: 0.9rem; color: #4a5568; margin-bottom: 1.5rem;">
-                <p style="margin-bottom: 0.6rem;"><strong>• 18 de Junio:</strong> Sustentación de proyectos finales de Ingeniería de Software.</p>
-                <p style="margin-bottom: 0.6rem;"><strong>• 20 de Junio:</strong> Ceremonia de entrega de reconocimientos de Investigación.</p>
+            <div class="card dinamico" style="padding: 1.5rem; border-radius: 8px;">
+                <h3 style="margin-bottom: 0.8rem; font-weight: 700; font-size: 1.1rem; color: var(--primary-color, #10b981);">⚡ Estado de Red</h3>
+                <p style="font-size: 0.85rem; line-height: 1.6; opacity: 0.8; margin: 0;">
+                    Bienvenido a la red distribuida local. Haz clic en <strong>💬 Debatir</strong> en cualquier tarjeta para abrir el hilo de comentarios en tiempo real.
+                </p>
             </div>
-
-            <h4 class="sidebar-title" style="border-bottom-color: var(--color-cultura);">💡 Enlaces Destacados</h4>
-            <div class="card-excerpt" style="font-size: 0.9rem; margin-bottom: 1.5rem;">
-                <a href="#" onclick="verificarAccesoForo('estudiantes'); return false;" style="color: var(--primary); text-decoration: none; display: block; margin-bottom: 0.5rem; font-weight: 600;">👉 ¡Revisa el Foro Estudiantil aquí!</a>
-            </div>
-
-            <!-- TARJETAS CON REDIRECCIÓN DINÁMICA DE PERFILES -->
-            <h4 class="sidebar-title" style="border-bottom-color: var(--primary);">👥 Perfiles Universitarios</h4>
-            
-            <a href="pages/perfil.html?user=representante" style="text-decoration: none; color: inherit; display: block; margin-bottom: 1rem;">
-                <div class="card" style="padding: 1rem; cursor: pointer; border-left: 4px solid var(--accent);">
-                    <div style="display: flex; align-items: center; gap: 0.8rem;">
-                        <div style="width: 40px; height: 40px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">SG</div>
-                        <div>
-                            <h5 style="margin: 0; font-size: 0.95rem; font-weight: bold;">Santiago Gómez</h5>
-                            <p style="margin: 0; font-size: 0.75rem; color: #718096;">Ver Perfil de Representante</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
-
-            <a href="pages/perfil.html?user=rectoria" style="text-decoration: none; color: inherit; display: block;">
-                <div class="card" style="padding: 1rem; cursor: pointer; border-left: 4px solid var(--primary);">
-                    <div style="display: flex; align-items: center; gap: 0.8rem;">
-                        <div style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">MB</div>
-                        <div>
-                            <h5 style="margin: 0; font-size: 0.95rem; font-weight: bold;">Dra. Martha Benavídez</h5>
-                            <p style="margin: 0; font-size: 0.75rem; color: #718096;">Ver Canal de Rectoría</p>
-                        </div>
-                    </div>
-                </div>
-            </a>
         </aside>
-    </main>
-
-    <!-- ARQUITECTURA DE RESULTADOS AISLADA TIPO YOUTUBE -->
-    <main class="main-container" id="vista-resultados-youtube" style="display: none; grid-template-columns: 1fr;">
-        <section class="section-block" style="width: 100%;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid var(--gray); padding-bottom: 0.8rem;">
-                <h2 id="titulo-busqueda" style="font-weight: 800; font-size: 1.6rem; color: inherit;">🔍 Resultados de la búsqueda</h2>
-                <button onclick="volverAlInicioNormal()" style="background: #4a5568; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer;">← Volver al Inicio</button>
-            </div>
-            
-            <div id="youtube-results-container"></div>
-        </section>
-    </main>
-
-    <!-- PANEL DE ACCESIBILIDAD -->
-    <div class="accessibility-toggle" id="acc-toggle" onclick="toggleAccessibilityPanel()">⚙️</div>
-    <div class="accessibility-panel" id="acc-panel">
-        <span class="panel-close" onclick="toggleAccessibilityPanel()">✕</span>
-        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; font-weight: 700;">Accesibilidad</h3>
-        <div class="panel-section">
-            <h4>Paleta de Colores</h4>
-            <select id="theme-select" class="panel-select" onchange="changeTheme(this.value)">
-                <option value="light">☀️ Modo Claro</option>
-                <option value="dark">🌑 Modo Oscuro Premium</option>
-                <option value="warm">🍂 Modo Lectura Cálido</option>
-            </select>
-        </div>
-        <div class="panel-section">
-            <h4>Tipografía</h4>
-            <select id="font-select" class="panel-select" onchange="changeFont(this.value)">
-                <option value="default">Sans-serif</option>
-                <option value="arial">Arial</option>
-                <option value="times">Times New Roman</option>
-                <option value="comic">Comic Sans</option>
-            </select>
-        </div>
-        <div class="panel-section">
-            <h4>Tamaño del Texto</h4>
-            <select id="size-select" class="panel-select" onchange="changeSize(this.value)">
-                <option value="normal">Normal</option>
-                <option value="small">Pequeño</option>
-                <option value="large">Grande</option>
-            </select>
-        </div>
-        <div class="panel-section">
-            <button id="dyslexic-btn" class="switch-btn" onclick="toggleDyslexicMode()">Modo Dislexia</button>
-        </div>
     </div>
 
-    <footer class="footer">
-        <p>© 2026 U-Social - Red de Comunicación Universitaria.</p>
+    <footer class="footer" style="margin-top: 2rem;">
+        <p>© 2026 U-Social - Cartelera Universitaria Global.</p>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/custom.js"></script>
-
-    <!-- MOTOR DE PUBLICACIONES CON ENLACES INTERACTIVOS A LOS PERFILES -->
+    <script src="js/auth.js"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        let usuarioActivo = null;
-        try {
-            const storedUser = localStorage.getItem("usuarioSesion");
-            if (storedUser) usuarioActivo = JSON.parse(storedUser);
-        } catch (e) { console.error("Error al leer la sesión en portada:", e); }
+        document.addEventListener('DOMContentLoaded', () => {
+            logisticaSesionRaiz();
+            cargarNoticiasInicio();
 
-        const adminFormContainer = document.getElementById("admin-form-container");
-        const globalNewsContainer = document.getElementById("global-news-container");
-        
-        const vistaInicio = document.getElementById("vista-inicio-dashboard");
-        const vistaResultados = document.getElementById("vista-resultados-youtube");
-        const youtubeResultsContainer = document.getElementById("youtube-results-container");
-        const searchInput = document.getElementById("global-search");
-        const tituloBusqueda = document.getElementById("titulo-busqueda");
+            document.getElementById('form-noticia-inicio').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const titulo = document.getElementById('news-title').value.trim();
+                const cuerpo = document.getElementById('news-body').value.trim();
+                const inputFile = document.getElementById('news-file');
+                const file = (inputFile && inputFile.files.length > 0) ? inputFile.files[0] : null;
 
-        // Noticias base vinculadas a perfiles del ecosistema
-        const noticiasPorDefecto = [
-            {
-                id: 1,
-                autorUsername: "rectoria",
-                titulo: "U-Social estrena su nueva plataforma de comunicación interna",
-                meta: "Por: Dra. Martha Benavídez (Rectoría) | Hace 1 hora",
-                extracto: "Hoy se dio luz verde al ecosistema digital que unifica los foros estudiantiles, docentes y herramientas de accesibilidad premium.",
-                categoria: "global",
-                multimedia: ""
-            },
-            {
-                id: 2,
-                autorUsername: "representante",
-                titulo: "Convocatoria abierta para el torneo interfacultades de Deportes 2026",
-                meta: "Por: Santiago Gómez (Representante) | Ayer",
-                extracto: "Inscripciones abiertas desde este lunes para fútbol, baloncesto y eSports. Revisa los requisitos con tu representante.",
-                categoria: "deporte",
-                multimedia: ""
-            }
-        ];
+                let autor = "Usuario General";
+                const sesion = localStorage.getItem('usuarioSesion');
+                if(sesion) { autor = JSON.parse(sesion).nombre; }
 
-        try {
-            window.noticiasGlobales = JSON.parse(localStorage.getItem("noticias_globales"));
-            if (!window.noticiasGlobales || !Array.isArray(window.noticiasGlobales)) {
-                window.noticiasGlobales = noticiasPorDefecto;
-                localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
-            }
-        } catch (e) {
-            window.noticiasGlobales = noticiasPorDefecto;
-        }
+                if (file) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function(event) {
+                        guardarNoticia(titulo, cuerpo, autor, event.target.result, file.type, file.name);
+                    };
+                } else {
+                    guardarNoticia(titulo, cuerpo, autor, null, null, null);
+                }
+            });
+        });
 
-        // CONTROL DE ACCESO AL FORMULARIO
-        if (usuarioActivo && usuarioActivo.rol === "admin") {
-            if (adminFormContainer) {
-                adminFormContainer.innerHTML = `
-                    <div class="card" style="margin-bottom: 2rem; border-top: 5px solid var(--color-global); background: var(--white); padding: 1.5rem; border-radius: 8px;">
-                        <span class="tag tag-global" style="background-color: var(--color-global); color: white; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold;">Modo Editor Autorizado</span>
-                        <h3 style="margin-top: 0.5rem; margin-bottom: 1rem; font-weight:800; color: inherit;">✍️ Publicar Noticia en Primera Plana</h3>
-                        <div class="news-form">
-                            <div style="margin-bottom: 1rem;">
-                                <input type="text" id="news-title" placeholder="Título de la noticia" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background: transparent; color: inherit;">
-                            </div>
-                            <div style="margin-bottom: 1rem;">
-                                <select id="news-category" class="panel-select" style="padding:0.7rem; width:100%; border:1px solid var(--gray); background: transparent; color: inherit;">
-                                    <option value="global">🟥 Noticia Global Institucional</option>
-                                    <option value="facultad">🟦 Novedad de Facultad / Académica</option>
-                                    <option value="deporte">🟩 Evento Deportivo</option>
-                                    <option value="cultura">🟪 Agenda Cultural y Social</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 1rem;">
-                                <textarea id="news-content" placeholder="Escribe el cuerpo de la noticia..." rows="4" style="width:100%; padding:0.7rem; border-radius:4px; border:1px solid var(--gray); background: transparent; color: inherit; resize:vertical;"></textarea>
-                            </div>
-                            <div style="background: var(--light); padding: 0.8rem; border-radius: 6px; margin-bottom: 1rem; border: 1px dashed var(--gray);">
-                                <p style="font-size: 0.8rem; font-weight: bold; margin-bottom: 0.4rem; color: inherit;">🖼️ Imagen Portada (Opcional):</p>
-                                <input type="file" id="news-img" accept="image/*" style="width: 100%; font-size: 0.8rem; color: inherit;">
-                            </div>
-                            <button type="button" onclick="publicarNoticiaDirecta(event)" style="width:100%; background: var(--color-global); color:white; padding:0.8rem; font-size:1rem; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">🚀 Lanzar Noticia</button>
-                        </div>
-                    </div>
-                `;
-            }
-        } else {
-            if (adminFormContainer) adminFormContainer.innerHTML = "";
-        }
-
-        window.publicarNoticiaDirecta = async (e) => {
-            if (e) e.preventDefault();
-            if (!usuarioActivo || usuarioActivo.rol !== "admin") return;
-
-            const tit = document.getElementById("news-title");
-            const cat = document.getElementById("news-category");
-            const cont = document.getElementById("news-content");
-            const img = document.getElementById("news-img");
-
-            if (!tit.value.trim() || !cont.value.trim()) {
-                alert("Por favor, llena el título y contenido.");
-                return;
-            }
-
-            let b64 = "";
-            if (img && img.files && img.files[0]) {
-                const reader = new FileReader();
-                b64 = await new Promise((res) => {
-                    reader.onload = () => res(reader.result);
-                    reader.readAsDataURL(img.files[0]);
-                });
-            }
-
-            const nuevo = {
+        function guardarNoticia(titulo, cuerpo, autor, fileData, fileType, fileName) {
+            const ahora = new Date();
+            const fechaStr = ahora.toLocaleDateString('es-ES', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+            
+            const nuevaNoticia = {
                 id: Date.now(),
-                autorUsername: "rectoria", // Vinculado al canal oficial de Rectoría
-                titulo: tit.value.trim(),
-                meta: `Por: Dra. Martha Benavídez (Rectoría) | Ahora mismo`,
-                extracto: cont.value.trim(),
-                categoria: cat.value,
-                multimedia: b64
+                titulo: titulo,
+                cuerpo: cuerpo,
+                autor: autor,
+                fecha: fechaStr,
+                fileData: fileData,
+                fileType: fileType,
+                nombreArchivo: fileName,
+                comentarios: []
             };
 
-            window.noticiasGlobales.unshift(nuevo);
-            localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
+            const noticias = JSON.parse(localStorage.getItem('posts_inicio')) || [];
+            noticias.push(nuevaNoticia);
+            localStorage.setItem('posts_inicio', JSON.stringify(noticias));
 
-            if (tit) tit.value = "";
-            if (cont) cont.value = "";
-            if (img) img.value = "";
-            
-            window.volverAlInicioNormal();
-        };
+            document.getElementById('form-noticia-inicio').reset();
+            cargarNoticiasInicio();
+        }
 
-        // RENDERS OPTIMIZADOS CON ENLACE DINÁMICO REAL (href="pages/perfil.html?user=...")
-        window.renderNoticiasDirectas = (lista) => {
-            if (!globalNewsContainer) return;
-            globalNewsContainer.innerHTML = "";
-            
-            lista.forEach(n => {
-                let col = `var(--color-${n.categoria || 'global'})`;
-                let im = n.multimedia ? `<img src="${n.multimedia}" style="width:100%; max-height:350px; object-fit:cover; border-radius:6px; margin-top:1rem; display:block;">` : "";
-                
-                const esAdmin = usuarioActivo && usuarioActivo.rol === "admin";
-                const botonBorrar = esAdmin ? `<button class="btn-delete-post" onclick="borrarNoticiaDirecta(${n.id}, false)" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:0.85rem; font-weight:bold; margin-top:1rem; display:block; padding:0;">🗑️ Retirar Noticia</button>` : "";
-                
-                let targetUser = n.autorUsername || "rectoria";
-                let textoFiltro = n.meta.replace("Por: ", "");
+        function cargarNoticiasInicio() {
+            const contenedor = document.getElementById('news-container');
+            if (!contenedor) return;
+            contenedor.innerHTML = "";
 
-                globalNewsContainer.innerHTML += `
-                    <article class="card" style="border-top: 4px solid ${col}; margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 8px; background: var(--white);">
-                        <span class="tag tag-${n.categoria}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${n.categoria}</span>
-                        <h4 style="margin-top:0.5rem; margin-bottom:0.3rem; font-weight:700; font-size:1.3rem; color: inherit;">${n.titulo}</h4>
-                        
-                        <!-- TEXTO METADATA INTERACTIVO -->
-                        <p style="font-size:0.8rem; color:#718096; margin-bottom: 0.8rem;">
-                            Por: <a href="pages/perfil.html?user=${targetUser}" style="color: var(--primary); text-decoration: none; font-weight: bold; border-bottom: 1px dashed transparent;" onmouseover="this.style.borderBottomColor='var(--primary)'" onmouseout="this.style.borderBottomColor='transparent'">${textoFiltro}</a>
-                        </p>
-                        
-                        <p style="white-space: pre-wrap; font-size:0.95rem; line-height:1.5; color: inherit;">${n.extracto}</p>
-                        ${im}
-                        ${botonBorrar}
-                    </article>
-                `;
-            });
-        };
+            const noticias = JSON.parse(localStorage.getItem('posts_inicio')) || [];
 
-        window.ejecutarBusquedaEstiloYouTube = () => {
-            const consulta = searchInput.value.toLowerCase().trim();
-
-            if (consulta === "") {
-                window.volverAlInicioNormal();
+            if (noticias.length === 0) {
+                contenedor.innerHTML = `<div class="card" style="text-align:center; opacity:0.5; padding:2.5rem;"><p>📰 Sin anuncios ni prensa en cartelera.</p></div>`;
                 return;
             }
 
-            const filtradas = window.noticiasGlobales.filter(noticia => {
-                return (noticia.titulo || "").toLowerCase().includes(consulta) || 
-                       (noticia.extracto || "").toLowerCase().includes(consulta) || 
-                       (noticia.categoria || "").toLowerCase().includes(consulta) ||
-                       (noticia.meta || "").toLowerCase().includes(consulta);
-            });
+            [...noticias].reverse().forEach(item => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card dinamico';
+                tarjeta.style.padding = '1.5rem';
+                tarjeta.style.borderRadius = '8px';
 
-            vistaInicio.style.display = "none";
-            vistaResultados.style.display = "grid";
-            
-            tituloBusqueda.innerHTML = `🔍 Resultados para: <span style="color: var(--primary); font-style: italic;">"${searchInput.value}"</span> (${filtradas.length})`;
-            
-            youtubeResultsContainer.innerHTML = "";
-            if (filtradas.length === 0) {
-                youtubeResultsContainer.innerHTML = `
-                    <div style="text-align: center; padding: 4rem 1rem; color: #718096; background: var(--white); border-radius: 8px;">
-                        <p style="font-size: 4rem; margin-bottom: 1rem;">📭</p>
-                        <h3 style="font-weight: bold; color: inherit;">No hay resultados que coincidan</h3>
-                        <button onclick="volverAlInicioNormal()" style="margin-top: 1.5rem; background: var(--primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer;">Ver todas las noticias</button>
-                    </div>`;
-                return;
-            }
-
-            filtradas.forEach(n => {
-                let col = `var(--color-${n.categoria || 'global'})`;
-                let im = n.multimedia ? `<img src="${n.multimedia}" style="width:100%; max-height:400px; object-fit:cover; border-radius:6px; margin-top:1rem; display:block;">` : "";
-                
-                const esAdmin = usuarioActivo && usuarioActivo.rol === "admin";
-                const botonBorrar = esAdmin ? `<button class="btn-delete-post" onclick="borrarNoticiaDirecta(${n.id}, true)" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:0.85rem; font-weight:bold; margin-top:1rem; display:block; padding:0;">🗑️ Retirar Noticia</button>` : "";
-
-                let targetUser = n.autorUsername || "rectoria";
-                let textoFiltro = n.meta.replace("Por: ", "");
-
-                youtubeResultsContainer.innerHTML += `
-                    <article class="card" style="border-top: 4px solid ${col}; margin-bottom: 1.5rem; padding: 2rem; border-radius: 8px; background: var(--white);">
-                        <span class="tag tag-${n.categoria}" style="display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">${n.categoria}</span>
-                        <h4 style="margin-top:0.5rem; margin-bottom:0.3rem; font-weight:700; font-size:1.4rem; color: inherit;">${n.titulo}</h4>
-                        
-                        <p style="font-size:0.85rem; color:#718096; margin-bottom: 1rem;">
-                            Por: <a href="pages/perfil.html?user=${targetUser}" style="color: var(--primary); text-decoration: none; font-weight: bold;">${textoFiltro}</a>
-                        </p>
-                        
-                        <p style="white-space: pre-wrap; font-size: 1rem; line-height:1.6; color: inherit;">${n.extracto}</p>
-                        ${im}
-                        ${botonBorrar}
-                    </article>
-                `;
-            });
-        };
-
-        window.volverAlInicioNormal = () => {
-            if (searchInput) searchInput.value = "";
-            vistaResultados.style.display = "none";
-            vistaInicio.style.display = "grid";
-            window.renderNoticiasDirectas(window.noticiasGlobales);
-        };
-
-        if (searchInput) {
-            searchInput.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    window.ejecutarBusquedaEstiloYouTube();
+                let adjuntoHTML = '';
+                if (item.fileData && item.fileType) {
+                    if (item.fileType.startsWith('image/')) {
+                        /* CORRECCIÓN VISUAL: Contenedor flex con altura máxima y ajuste proporcionado de la imagen */
+                        adjuntoHTML = `
+                            <div style="margin-top:14px; width:100%; max-height:380px; overflow:hidden; border-radius:8px; background:rgba(0,0,0,0.2); display:flex; justify-content:center; align-items:center;">
+                                <img src="${item.fileData}" style="width:100%; max-width:100%; height:auto; max-height:380px; object-fit: contain; display:block;">
+                            </div>
+                        `;
+                    } else if (item.fileType.startsWith('audio/')) {
+                        adjuntoHTML = `<div style="margin-top:12px;"><audio src="${item.fileData}" controls style="width:100%;"></audio></div>`;
+                    } else if (item.fileType.startsWith('video/')) {
+                        adjuntoHTML = `<div style="margin-top:12px;"><video src="${item.fileData}" controls style="width:100%; max-height:200px; background:#000; border-radius:6px;"></video></div>`;
+                    } else if (item.fileType === 'application/pdf') {
+                        adjuntoHTML = `<div style="margin-top:12px;"><a href="${item.fileData}" download="${item.nombreArchivo}" class="btn-auth" style="display:inline-flex; font-size:0.8rem; padding:0.4rem 1rem; background:#10b981; text-decoration:none; color:white; border-radius:4px;">📄 Descargar PDF</a></div>`;
+                    }
                 }
+
+                const numComentarios = item.comentarios ? item.comentarios.length : 0;
+
+                tarjeta.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; opacity:0.6; margin-bottom:8px;">
+                        <strong>📢 Corresponsal: ${item.autor}</strong>
+                        <span>${item.fecha}</span>
+                    </div>
+                    <h3 style="font-size:1.4rem; font-weight:bold; margin-bottom:8px; color:var(--primary-color, #10b981);">${item.titulo}</h3>
+                    <p style="white-space:pre-wrap; opacity:0.9; font-size:0.95rem; line-height:1.6;">${item.cuerpo}</p>
+                    ${adjuntoHTML}
+                    
+                    <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                        <button onclick="irAlDebate('inicio', ${item.id})" class="btn-debate">
+                            💬 Debatir (${numComentarios})
+                        </button>
+                    </div>
+                `;
+                contenedor.appendChild(tarjeta);
             });
         }
 
-        window.borrarNoticiaDirecta = (id, desdeResultados) => {
-            if (!usuarioActivo || usuarioActivo.rol !== "admin") return;
-            if (confirm("¿Estás seguro de que deseas retirar esta noticia?")) {
-                window.noticiasGlobales = window.noticiasGlobales.filter(n => n.id !== id);
-                localStorage.setItem("noticias_globales", JSON.stringify(window.noticiasGlobales));
-                if (desdeResultados) {
-                    window.ejecutarBusquedaEstiloYouTube();
-                } else {
-                    window.renderNoticiasDirectas(window.noticiasGlobales);
+        function irAlDebate(origen, idPost) {
+            localStorage.setItem('debate_origen_key', origen);
+            localStorage.setItem('debate_post_id', idPost);
+            window.location.href = 'pages/detalle-post.html';
+        }
+
+        // LÓGICA DE BARRA SUPERIOR DINÁMICA
+        function logisticaSesionRaiz() {
+            const btnLoginNav = document.getElementById('login-nav-btn');
+            const btnLogout = document.getElementById('logout-btn');
+            const btnAuth = document.getElementById('auth-btn');
+            const sesion = localStorage.getItem('usuarioSesion');
+
+            if (sesion) {
+                if (btnLoginNav) btnLoginNav.style.display = 'none';
+                if (btnLogout) btnLogout.style.display = 'inline-block';
+                if (btnAuth) btnAuth.innerHTML = `👤 Perfil (${JSON.parse(sesion).nombre})`;
+            } else {
+                if (btnLoginNav) btnLoginNav.style.display = 'inline-block';
+                if (btnLogout) btnLogout.style.display = 'none';
+                if (btnAuth) btnAuth.innerHTML = `👤 Perfil`;
+            }
+        }
+
+        function redirigirForoProfesoresRaiz(e) {
+            if (e) e.preventDefault();
+            const sesion = localStorage.getItem('usuarioSesion');
+            if (sesion) {
+                const rol = (JSON.parse(sesion).tipo || "").toLowerCase();
+                if (['admin', 'administrador', 'profesor', 'profe', 'docente'].includes(rol)) {
+                    window.location.href = 'pages/foro-profesores.html';
+                    return;
                 }
             }
-        };
+            alert('⛔ Acceso restringido al personal docente.');
+        }
 
-        window.renderNoticiasDirectas(window.noticiasGlobales);
-    });
+        function cerrarSesionRaiz(e) {
+            if (e) e.preventDefault();
+            if (confirm('¿Cerrar sesión activa?')) {
+                localStorage.removeItem('usuarioSesion');
+                window.location.reload();
+            }
+        }
     </script>
 </body>
 </html>
